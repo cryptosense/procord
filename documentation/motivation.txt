@@ -55,6 +55,18 @@ used on Windows.  Also, [ParMap] relies on [Marshal], and there is
 no way to provide custom serialization functions, although this
 could probably easily be added.
 
+The [Functory] library is a nice alternative. It provide map/reduce
+functions that can be called using workers on the network or on the
+same machine. It has a [Mono] module which can be used if [Marshal]
+is not an option. It seems to be a little lacking from the documentation
+point-of-view though and the [Network.computation_status] has only one
+status for errors: [Dead], with no explanation. I also have plans to
+provide a way to redirect stdout and stderr (maybe stdin as well) to the
+master's channels, so that executing a task is even closer to executing
+it locally, and [Functory] does not advertizes that. It does not
+advertizes portability either (but maybe it is). Overall it seems it
+was designed more to massively dispatch several computations.
+
 Now, it happens that I need a solution with the following constraints:
 - it should run on Linux and Windows, at the very least (so no [fork]);
 - the UI should be very reactive even during long computations;
