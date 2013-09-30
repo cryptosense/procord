@@ -1,0 +1,77 @@
+There are several ways to perform a task in parallel in OCaml:
+- using lightweight threads ([Lwt], [Async]);
+- using system threads ([Thread]);
+- using processes ([Unix.create_process]).
+
+Lightweight threads are very efficient, but they are
+non-preemptive, so the user must explicitely yield control. This
+is very often the way to go, but it is impractical in some
+scenarios, such as if the task was not written by you. Also,
+yielding using lightweight threads is not as simple as calling a
+yield function, it requires some code refactoring. Moreover, when
+yielding to a UI such as GTK, this can result in the task being
+slowed down by quite a huge factor in some cases due to the way
+the GTK main loop works. In any case, it is not easy to obtain a
+very responsive UI in this fashion. And of course lightweight
+threads do not use multicore architectures. Another issue is that
+lightweight threads cannot be used for sandboxing: a segmentation
+fault will kill not only the faulting thread but all other threads
+as well, including the main thread.
+
+One would think that system threads would solve some of the
+aforementioned issues, but actually in OCaml they can be worse. In
+OCaml the threads are more or less emulated; context-switching
+occurs very rarely, and sometimes they do not occur at all for
+native code. This means you need to explicitly yield, which
+requires less refactoring than for lightweight threads but is
+still cumbersome. If you have a loop which runs a lot of small
+iterations, for instance, the two easy choices are: yielding very,
+very often, which is very inefficient; or do not yield at
+all. Finally, segmentation faults still cause the whole program to
+terminate.
+
+Spawning a process is costly, but it allows your UI to be fully
+responsive and a child process segfaulting will not cause the main
+process to crash as well. Yielding is not required at
+all. However, memory is not shared and thus one needs to serialize
+values. This is easy with [Marshal], but [Marshal] is not
+type-safe, so it is not an option in some cases (e.g. servers) as
+it is a serious security issue.
+
+Nevertheless, processes may be your only option. If you want to
+perform a long computation which has an initial input but which
+will not need any other input during the computation itself
+(besides, maybe, a stop button), it might actually be a good idea
+to embed the computation into a stand-alone program.
+
+The [ParMap] library provides a way to spawn processes which will
+perform almost any task in parallel, but, to quote its
+documentation: "most of the magic is done by your operating
+system's [fork] and memory mapping mechanisms". Unfortunately,
+here is another quote, this time from the OCaml Manual, regarding
+the native Win32 ports: "fork - not implemented, use
+create_process or threads". In other words, [ParMap] cannot be
+used on Windows.  Also, [ParMap] relies on [Marshal], and there is
+no way to provide custom serialization functions, although this
+could probably easily be added.
+
+Now, it happens that I need a solution with the following constraints:
+- it should run on Linux and Windows, at the very least (so no [fork]);
+- the UI should be very reactive even during long computations;
+- efficiency is an issue;
+- security and stability is an issue (so no [Marshal], and no segmentation
+  faults in the main program).
+Luckily, writing serializing functions is not an issue, as I am actually
+happy to write domain-specific languages for my inputs and outputs.
+I am even more happy if this leads to a modular architecture where tasks
+are delegated to workers which can be called manually for debugging
+and could run in massively parallel environments such as
+Amazon Web Service, where modularity is key.
+
+These constraints motivate the need for yet another concurrency library.
+
+Besides the above constraints, I want to start small but it should
+be possible to extend the library so that new ways to delegate
+tasks (e.g. through the network) are easy to add without actually
+changing the code of the task itself, nor the code which delegates
+the task to another process.

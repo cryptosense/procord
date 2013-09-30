@@ -1,0 +1,48 @@
+Some tricky stuff about file descriptors and sockets...
+
+- Unix.read, Unix.write, Unix.send and Unix.recv (and their derivatives)
+  can return errors in several fashions:
+  - exception Unix_error;
+  - SIGPIPE (even though EPIPE exists) – and OCaml may even fail to print
+    an error;
+  - return an error later that should be read using Unix.getsockopt_error
+    (for non-blocking connecting sockets).
+
+- Your file descriptor will become bad if the connection is closed, even if
+  not by yourself.
+
+- Nothing to read does not return a size of 0 (which actually means EOF),
+  it triggers EAGAIN or EWOULDBLOCK (for non-blocking sockets). This actually
+  makes a lot of sense but it is easy to forget to handle.
+
+- Unix.select continues to say we can write on a closed socket, despite the
+  socket being closed. Maybe not true on Windows. There is probably a good
+  reason for this.
+
+- Unix.select does not consider the connection failing or being closed to be an
+  exceptional condition (on Linux). If you wait for the connection to be closed
+  using Unix.select on exceptional conditions and on writing, but not on
+  reading, you will just block forever or until timeout.
+
+  NOTE: this is from memory, this needs to be checked again.
+
+- Unix.select fails with EBADF on a closed connection.
+  At first glance one could expect Unix.select to say there is an exceptional
+  condition. "Of course" it would be a bad idea.
+
+- If we cannot send, this does not mean we cannot receive. (See Unix.shutdown.)
+  But on the other hand, maybe it means EBADF is coming if we try to
+  receive?
+  On the other other hand, if Unix.select says we can always write,
+  shouldn't we be able to write on a closed connection, at least while
+  we recv? But what about Windows?
+
+Some differences between UNIX and Windows, even with OCaml's Unix layer...
+
+- It seems set_nonblock has no effect on Windows for Unix.read.
+  One can use Unix.select to check whether there is something to read, though.
+
+- Behavior of Unix.select is different on Windows.
+  - When Connecting, in case of error, does not say we can write, but say there
+    is an exceptional condition. Then getsockopt_error can be used, but it
+    returns an unknown error.
