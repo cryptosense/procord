@@ -9,10 +9,14 @@ val delegate: ('a, 'b) Procord_task.delegated_task -> 'a -> 'b process
   (** Delegate according to command-line options parsed by
       [Procord_worker.run].
 
-      If [--procord-hostname] is empty, delegate using [Unix.create_process],
-      to the executable [Sys.executable_name]. Else, delegate using a socket
-      connection to a server worker (started with --procord-server) at
-      the address specified by [--procord-hostname], port [--procord-port].
+      The task starts to run in the background immediately.
+
+      If command-line argument [--procord-hostname] is empty, delegate
+      using [Unix.create_process], to the executable
+      [Sys.executable_name]. Else, delegate using a socket connection
+      to a server worker (started with --procord-server) at the
+      address specified by [--procord-hostname], port
+      [--procord-port].
 
       Call [Procord_worker.run] at the beginning at your program if you plan
       to use this function. Otherwise, use one of the alternatives below. *)
@@ -23,6 +27,8 @@ val delegate_task_create_process:
   ('a, 'b) Procord_task.delegated_task -> 'a -> 'b process
   (** Delegate a task, running it in another process on the current machine.
       The process is created using [Unix.create_process].
+
+      The task starts to run in the background immediately.
 
       Usage: [delegate_task_create_process ?stderr program arguments task input]
 
@@ -40,6 +46,8 @@ val delegate_task_socket:
   string -> int ->
   ('a, 'b) Procord_task.delegated_task -> 'a -> 'b process
   (** Delegate a task, running it in another process on a remote machine.
+
+      The socket is created immediately.
 
       Usage: [delegate_task_socket hostname port task input]
 
