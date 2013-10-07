@@ -51,6 +51,25 @@ test.exec:
 	@echo "Now run $(ALL_TESTS) using --client and --server options."
 
 ################################################################################
+#                              Install / Uninstall                             #
+################################################################################
+
+install:
+	ocamlfind install procord META \
+	  _build/source/procord.a \
+	  _build/source/procord.cma \
+	  _build/source/procord.cmxa \
+	  _build/source/procord_connection.cmi \
+	  _build/source/procord_process.cmi \
+	  _build/source/procord_protocol.cmi \
+	  _build/source/procord_rope.cmi \
+	  _build/source/procord_task.cmi \
+	  _build/source/procord_worker.cmi
+
+uninstall remove:
+	ocamlfind remove procord
+
+################################################################################
 #                                  Other Rules                                 #
 ################################################################################
 
@@ -71,4 +90,6 @@ wc:
 
 ################################################################################
 
-.PHONY: all byte native doc test test.byte test.native test.exec clean wc
+.PHONY: all byte native doc test test.byte test.native test.exec \
+	install uninstall remove \
+	clean wc

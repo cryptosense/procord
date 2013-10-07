@@ -1,0 +1,5 @@
+description = "Procord: library to delegate tasks to other processes"
+version = "0.1.0"
+archive(byte) = "procord.cma"
+archive(native) = "procord.cmxa"
+requires = "unix"
