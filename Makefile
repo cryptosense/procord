@@ -18,6 +18,9 @@ TESTS = test/test.byte
 
 ################################################################################
 
+lib:
+	$(OCAMLBUILD) $(BYTE) $(NATIVE)
+
 all:
 	$(OCAMLBUILD) $(BYTE) $(NATIVE) $(DOC)
 	ln -sf _build/$(DOC) documentation.html
