@@ -1,0 +1,76 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Procord_connection" rel="Chapter" href="Procord_connection.html">
+<link title="Procord_process" rel="Chapter" href="Procord_process.html">
+<link title="Procord_protocol" rel="Chapter" href="Procord_protocol.html">
+<link title="Procord_rope" rel="Chapter" href="Procord_rope.html">
+<link title="Procord_task" rel="Chapter" href="Procord_task.html">
+<link title="Procord_worker" rel="Chapter" href="Procord_worker.html"><title>Procord_connection</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;t<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;connect&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?timeout:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?ping:string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;update&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;state&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Connecting</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Connected</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Disconnecting</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Disconnected</span>&nbsp;<span class="keyword">of</span>&nbsp;(<span class="constructor">Unix</span>.error&nbsp;*&nbsp;string&nbsp;*&nbsp;string)&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;state&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_connection</span>.state<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;alive&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive_poll&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive_poll_part&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive_all&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive_part&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive_forget&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive_buffer_length&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive_buffer_empty&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;close&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;close_nicely&nbsp;:&nbsp;?timeout:float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;data&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;remote_address&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Unix</span>.sockaddr<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;make_address&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Unix</span>.inet_addr<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;set<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;empty_set&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.set<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;accept_into_set&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?timeout:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?ping:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Unix</span>.file_descr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Unix</span>.sockaddr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.set&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;update_set&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.set&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;iter&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.set&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;waiter<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;waiter&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_connection</span>.waiter<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;waiter_of_listening_socket&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Unix</span>.file_descr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_connection</span>.waiter<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;waiter_of_set&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.set&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_connection</span>.waiter<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;waiter_custom&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?read:<span class="constructor">Unix</span>.file_descr&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?write:<span class="constructor">Unix</span>.file_descr&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?except:<span class="constructor">Unix</span>.file_descr&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_connection</span>.waiter<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;waiter_of_list&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Procord_connection</span>.waiter&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_connection</span>.waiter<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;instanciate_waiter&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Procord_connection</span>.waiter&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Unix</span>.file_descr&nbsp;list&nbsp;*&nbsp;<span class="constructor">Unix</span>.file_descr&nbsp;list&nbsp;*&nbsp;<span class="constructor">Unix</span>.file_descr&nbsp;list<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;wait&nbsp;:&nbsp;?timeout:float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_connection</span>.waiter&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;wait'&nbsp;:&nbsp;?timeout:float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_connection</span>.waiter&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;custom&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?timeout:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?ping:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?input:<span class="constructor">Unix</span>.file_descr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?output:<span class="constructor">Unix</span>.file_descr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?remote_address:<span class="constructor">Unix</span>.sockaddr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t<br>
+<span class="keyword">end</span></code></body></html>

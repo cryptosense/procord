@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Procord_connection.html">
+<link rel="next" href="Procord_protocol.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Procord_connection" rel="Chapter" href="Procord_connection.html">
+<link title="Procord_process" rel="Chapter" href="Procord_process.html">
+<link title="Procord_protocol" rel="Chapter" href="Procord_protocol.html">
+<link title="Procord_rope" rel="Chapter" href="Procord_rope.html">
+<link title="Procord_task" rel="Chapter" href="Procord_task.html">
+<link title="Procord_worker" rel="Chapter" href="Procord_worker.html"><link title="Delegating Tasks" rel="Section" href="#2_DelegatingTasks">
+<link title="Running Processes" rel="Section" href="#2_RunningProcesses">
+<title>Procord_process</title>
+</head>
+<body>
+<div class="navbar"><a href="Procord_connection.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="Procord_protocol.html">Next</a>
+</div>
+<center><h1>Module <a href="type_Procord_process.html">Procord_process</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Procord_process: <code class="code">sig</code> <a href="Procord_process.html">..</a> <code class="code">end</code></pre>Delegating tasks to other processes.<br>
+<hr width="100%">
+<pre><span id="TYPEprocess"><span class="keyword">type</span> <code class="type">'a</code> process</span> </pre>
+<div class="info">
+The type of processes.<br>
+</div>
+
+<br>
+<span id="2_DelegatingTasks"><h2>Delegating Tasks</h2></span><br>
+<pre><span id="VALdelegate"><span class="keyword">val</span> delegate</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">Procord_task.delegated_task</a> -> 'a -> 'b <a href="Procord_process.html#TYPEprocess">process</a></code></pre><div class="info">
+Delegate according to command-line options parsed by
+      <code class="code">Procord_worker.run</code>.
+<p>
+
+      The task starts to run in the background immediately.
+<p>
+
+      If command-line argument <code class="code">--procord-hostname</code> is empty, delegate
+      using <code class="code">Unix.create_process</code>, to the executable
+      <code class="code">Sys.executable_name</code>. Else, delegate using a socket connection
+      to a server worker (started with --procord-server) at the
+      address specified by <code class="code">--procord-hostname</code>, port
+      <code class="code">--procord-port</code>.
+<p>
+
+      Call <code class="code">Procord_worker.run</code> at the beginning at your program if you plan
+      to use this function. Otherwise, use one of the alternatives below.<br>
+</div>
+<pre><span id="VALdelegate_task_create_process"><span class="keyword">val</span> delegate_task_create_process</span> : <code class="type">?stderr:Unix.file_descr -><br>       string -><br>       string array -><br>       ('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">Procord_task.delegated_task</a> -> 'a -> 'b <a href="Procord_process.html#TYPEprocess">process</a></code></pre><div class="info">
+Delegate a task, running it in another process on the current machine.
+      The process is created using <code class="code">Unix.create_process</code>.
+<p>
+
+      The task starts to run in the background immediately.
+<p>
+
+      Usage: <code class="code">delegate_task_create_process ?stderr program arguments task input</code>
+<p>
+
+      The <code class="code">program</code> is the executable file name. It can be the main
+      program file name itself (<code class="code">Sys.executable_name</code>), if it has a
+      way to distinguish whether it is a worker, for instance from
+      command-line <code class="code">arguments</code>.<br>
+</div>
+<div class="param_info"><code class="code">stderr</code> : If specified, the created process will have its standard
+        error redirected to <code class="code">stderr</code>. If unspecified, everything the created
+        process writes on its standard error will be ignored.
+        Example: <code class="code">Unix.stderr</code></div>
+<pre><span id="VALdelegate_task_socket"><span class="keyword">val</span> delegate_task_socket</span> : <code class="type">string -><br>       int -><br>       ('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">Procord_task.delegated_task</a> -> 'a -> 'b <a href="Procord_process.html#TYPEprocess">process</a></code></pre><div class="info">
+Delegate a task, running it in another process on a remote machine.
+<p>
+
+      The socket is created immediately.
+<p>
+
+      Usage: <code class="code">delegate_task_socket hostname port task input</code>
+<p>
+
+      The task will be delegated to a worker running on remote machine
+      <code class="code">hostname</code>, listening on <code class="code">port</code>.
+<p>
+
+      The <code class="code">hostname</code> can be an IP address, an IPv6 address or a DNS address.<br>
+</div>
+<br>
+<span id="2_RunningProcesses"><h2>Running Processes</h2></span><br>
+<br>
+To run a process, either call <code class="code">run_process</code> (which is blocking), or
+    call <code class="code">update</code> followed by <code class="code">process_status</code> regularly. Wait using
+    <code class="code">process_waiter</code> between two updates.<br>
+<br><code><span id="TYPEexecution_error"><span class="keyword">type</span> <code class="type"></code>execution_error</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Worker_unknown_exception</span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >A worker raised an exception which was not handled by
+          <code class="code">write_exception</code>. The <code class="code">string</code> is obtained using <code class="code">Printexc</code>.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Worker_killed</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >You killed the worker yourself.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Worker_disconnected</span> <span class="keyword">of</span> <code class="type">exn</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >An exception was raised while trying to connect to, send to,
+          or receive from a worker; or the worker was killed, crashed or
+          exited without returning any output; or there was an error while
+          serializing an input value or deserializing an output value.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">No_worker_available</span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >No worker is available to perform the required task, or the
+          selected worker cannot perform the required task.
+          The string is the task name.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+<div class="info">
+Execution error descriptions.<br>
+</div>
+
+<pre><span id="EXCEPTIONExecution_error"><span class="keyword">exception</span> Execution_error</span> <span class="keyword">of</span> <code class="type"><a href="Procord_process.html#TYPEexecution_error">execution_error</a></code></pre>
+<div class="info">
+An unexpected error occurred when delegating a task.<br>
+</div>
+<pre><span id="VALerror_message"><span class="keyword">val</span> error_message</span> : <code class="type"><a href="Procord_process.html#TYPEexecution_error">execution_error</a> -> string</code></pre><div class="info">
+Return a string explaining an error in English.<br>
+</div>
+<br><code><span id="TYPEstatus"><span class="keyword">type</span> <code class="type">'a</code> status</span> = </code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Working</span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >The task is not finished yet.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Success</span> <span class="keyword">of</span> <code class="type">'a</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >The task was performed successfully, <code class="code">'a</code> is the result.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Exception</span> <span class="keyword">of</span> <code class="type">exn</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >The task resulted in an exception that <code class="code">write_exception</code>
+          could handle.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span class="constructor">Error</span> <span class="keyword">of</span> <code class="type"><a href="Procord_process.html#TYPEexecution_error">execution_error</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Failed to execute the task.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+<div class="info">
+Status of a task given to a worker.<br>
+</div>
+
+<pre><span id="VALwaiter"><span class="keyword">val</span> waiter</span> : <code class="type">'a <a href="Procord_process.html#TYPEprocess">process</a> -> <a href="Procord_connection.html#TYPEwaiter">Procord_connection.waiter</a></code></pre><div class="info">
+Return a waiter which waits until something happens for a process.<br>
+</div>
+<pre><span id="VALupdate"><span class="keyword">val</span> update</span> : <code class="type">'a <a href="Procord_process.html#TYPEprocess">process</a> -> unit</code></pre><div class="info">
+Call this regularly to update the <code class="code">process_status</code>.<br>
+</div>
+<pre><span id="VALstatus"><span class="keyword">val</span> status</span> : <code class="type">'a <a href="Procord_process.html#TYPEprocess">process</a> -> 'a <a href="Procord_process.html#TYPEstatus">status</a></code></pre><div class="info">
+Get the current status of a process.<br>
+</div>
+<pre><span id="VALrun"><span class="keyword">val</span> run</span> : <code class="type">'a <a href="Procord_process.html#TYPEprocess">process</a> -> 'a</code></pre><div class="info">
+Wait (blocking) until a process terminates.
+<p>
+
+      Return the process return value or, if it raised an exception,
+      raise this exception.
+<p>
+
+      May also raise <code class="code">Execution_error</code>.<br>
+</div>
+<pre><span id="VALkill"><span class="keyword">val</span> kill</span> : <code class="type">'a <a href="Procord_process.html#TYPEprocess">process</a> -> unit</code></pre><div class="info">
+Terminate a process immediately.<br>
+</div>
+</body></html>

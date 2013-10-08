@@ -1,0 +1,45 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Procord_connection" rel="Chapter" href="Procord_connection.html">
+<link title="Procord_process" rel="Chapter" href="Procord_process.html">
+<link title="Procord_protocol" rel="Chapter" href="Procord_protocol.html">
+<link title="Procord_rope" rel="Chapter" href="Procord_rope.html">
+<link title="Procord_task" rel="Chapter" href="Procord_task.html">
+<link title="Procord_worker" rel="Chapter" href="Procord_worker.html"><title>Procord_protocol</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;error&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">E_task_not_supported</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">E_unexpected_message</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">E_ill_formed_message</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">E_message_too_long</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">E_disconnected</span><br>
+&nbsp;&nbsp;<span class="keyword">exception</span>&nbsp;<span class="constructor">Error</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Procord_protocol</span>.error<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;error&nbsp;:&nbsp;<span class="constructor">Procord_protocol</span>.error&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;error_message&nbsp;:&nbsp;<span class="constructor">Procord_protocol</span>.error&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;message&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">M_none</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_value</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_task_name</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_exception</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_unknown_exception</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_error</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Procord_protocol</span>.error<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_max_message_size&nbsp;:&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_protocol</span>.message&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_value&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_task_name&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_exception&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_unknown_exception&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_error&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_protocol</span>.error&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_protocol</span>.message<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;blocking_receive&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_protocol</span>.message<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;blocking_receive_task_name&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;blocking_receive_value&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+<span class="keyword">end</span></code></body></html>

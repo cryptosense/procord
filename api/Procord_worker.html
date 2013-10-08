@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Procord_task.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Procord_connection" rel="Chapter" href="Procord_connection.html">
+<link title="Procord_process" rel="Chapter" href="Procord_process.html">
+<link title="Procord_protocol" rel="Chapter" href="Procord_protocol.html">
+<link title="Procord_rope" rel="Chapter" href="Procord_rope.html">
+<link title="Procord_task" rel="Chapter" href="Procord_task.html">
+<link title="Procord_worker" rel="Chapter" href="Procord_worker.html"><link title="Generic Workers" rel="Section" href="#2_GenericWorkers">
+<link title="Custom Workers" rel="Section" href="#2_CustomWorkers">
+<title>Procord_worker</title>
+</head>
+<body>
+<div class="navbar"><a href="Procord_task.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;</div>
+<center><h1>Module <a href="type_Procord_worker.html">Procord_worker</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Procord_worker: <code class="code">sig</code> <a href="Procord_worker.html">..</a> <code class="code">end</code></pre>Main function to run a Procord worker.<br>
+<hr width="100%">
+<br>
+Workers are external programs which can execute some tasks.
+<p>
+
+    The easiest way to build a worker is just to use <code class="code">run</code>. If you prefer
+    to handle command-line options yourself, use other <code class="code">run_*</code> functions.<br>
+<pre><span id="TYPEtask"><span class="keyword">type</span> <code class="type"></code>task</span> </pre>
+<div class="info">
+Same as <code class="code">Procord_task.worker_task</code>, but allowing heterogenous lists of
+    tasks.<br>
+</div>
+
+<pre><span id="VALtask"><span class="keyword">val</span> task</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">Procord_task.worker_task</a> -> <a href="Procord_worker.html#TYPEtask">task</a></code></pre><div class="info">
+Embed a <code class="code">Procord_task.worker_task</code> for use with <a href="Procord_worker.html#VALrun"><code class="code">Procord_worker.run</code></a>.<br>
+</div>
+<br>
+<span id="2_GenericWorkers"><h2>Generic Workers</h2></span><br>
+<pre><span id="VALrun"><span class="keyword">val</span> run</span> : <code class="type">?spec:(Arg.key * Arg.spec * Arg.doc) list -><br>       ?usage:Arg.usage_msg -><br>       ?anon:Arg.anon_fun -> <a href="Procord_worker.html#TYPEtask">task</a> list -> unit</code></pre><div class="info">
+Parse command-line options and run the appropriate worker, if any.
+<p>
+
+      This function parses command line options as follows:<ul>
+<li><code class="code">--procord-worker</code>: execute one task, communicating over <code class="code">stdin</code>
+        and <code class="code">stdout</code>, and exit;</li>
+<li><code class="code">--procord-input-file &lt;file&gt;</code>: option for <code class="code">--procord-worker</code> which tells
+        the worker to read inputs from <code class="code">&lt;file&gt;</code> instead of <code class="code">stdin</code>;</li>
+<li><code class="code">--procord-output-file &lt;file&gt;</code>: option for <code class="code">--procord-worker</code> which
+        tells the worker to write outputs from <code class="code">&lt;file&gt;</code> instead of <code class="code">stdout</code>;</li>
+<li><code class="code">--procord-server</code>: listen for TCP connections and execute one task
+        per connection;</li>
+<li><code class="code">--procord-hostname &lt;hostname&gt;</code>: option for <code class="code">--procord-server</code> which
+        specifies the IPv4/IPv6/DNS address to listen to (default <code class="code">0.0.0.0</code>);</li>
+<li><code class="code">--procord-port &lt;port&gt;</code>: option for <code class="code">--procord-server</code> which
+        specifies the port to listen to (default <code class="code">1111</code>);</li>
+<li><code class="code">--procord-max-simultaneous-tasks &lt;count&gt;</code>:
+        option for <code class="code">--procord-server</code> which specifies the maximum number of
+        tasks that may be executed at the same time;</li>
+<li><code class="code">--procord-reuse-address</code>:
+        option for <code class="code">--procord-server</code> which tells the server to set the
+        <code class="code">SO_REUSEADDR</code> option on the listening socket.</li>
+</ul>
+
+      If neither <code class="code">--procord-worker</code> nor <code class="code">--procord-server</code> are given, the
+      function returns immediately. Else, the function never returns. Thus
+      you may call <code class="code">run</code> before your main program starts to allow your
+      program to act both as the main program and as a worker.
+<p>
+
+      The worker will be able to run any of the tasks given in the last
+      argument.
+<p>
+
+      You should not call <code class="code">Arg.parse</code> yourself (nor <code class="code">Arg.align</code>).
+      Instead, pass your specifications using <code class="code">spec</code>, <code class="code">usage</code> and <code class="code">anon</code>.
+      If you need more complex command-line parsing, use the
+      other <code class="code">run_*</code> functions.<br>
+</div>
+<pre><span id="VALget_input_file"><span class="keyword">val</span> get_input_file</span> : <code class="type">unit -> string</code></pre><div class="info">
+Get the <code class="code">--procord-input-file</code> argument.
+      Default value is <code class="code">""</code>.<br>
+</div>
+<pre><span id="VALset_input_file"><span class="keyword">val</span> set_input_file</span> : <code class="type">string -> unit</code></pre><div class="info">
+Set the <code class="code">--procord-input-file</code> argument.<br>
+</div>
+<pre><span id="VALget_output_file"><span class="keyword">val</span> get_output_file</span> : <code class="type">unit -> string</code></pre><div class="info">
+Get the <code class="code">--procord-output-file</code> argument.
+      Default value is <code class="code">""</code>.<br>
+</div>
+<pre><span id="VALset_output_file"><span class="keyword">val</span> set_output_file</span> : <code class="type">string -> unit</code></pre><div class="info">
+Set the <code class="code">--procord-output-file</code> argument.<br>
+</div>
+<pre><span id="VALget_hostname"><span class="keyword">val</span> get_hostname</span> : <code class="type">unit -> string</code></pre><div class="info">
+Get the <code class="code">--procord-hostname</code> argument.
+      Default value is <code class="code">""</code>.<br>
+</div>
+<pre><span id="VALset_hostname"><span class="keyword">val</span> set_hostname</span> : <code class="type">string -> unit</code></pre><div class="info">
+Set the <code class="code">--procord-hostname</code> argument.<br>
+</div>
+<pre><span id="VALget_port"><span class="keyword">val</span> get_port</span> : <code class="type">unit -> int</code></pre><div class="info">
+Get the <code class="code">--procord-port</code> argument.
+      Default value is <code class="code">1111</code>.<br>
+</div>
+<pre><span id="VALset_port"><span class="keyword">val</span> set_port</span> : <code class="type">int -> unit</code></pre><div class="info">
+Set the <code class="code">--procord-port</code> argument.<br>
+</div>
+<pre><span id="VALget_max_simultaneous_tasks"><span class="keyword">val</span> get_max_simultaneous_tasks</span> : <code class="type">unit -> int option</code></pre><div class="info">
+Get the <code class="code">--procord-max-simultaneous-tasks</code> argument.
+      Default value is <code class="code">None</code> (infinite).<br>
+</div>
+<pre><span id="VALset_max_simultaneous_tasks"><span class="keyword">val</span> set_max_simultaneous_tasks</span> : <code class="type">int option -> unit</code></pre><div class="info">
+Set the <code class="code">--procord-max-simultaneous-tasks</code> argument.<br>
+</div>
+<pre><span id="VALget_reuse_address"><span class="keyword">val</span> get_reuse_address</span> : <code class="type">unit -> bool</code></pre><div class="info">
+Get the <code class="code">--procord-reuse-address</code> argument.
+      Default value is <code class="code">false</code>.<br>
+</div>
+<pre><span id="VALset_reuse_address"><span class="keyword">val</span> set_reuse_address</span> : <code class="type">bool -> unit</code></pre><div class="info">
+Set the <code class="code">--procord-reuse-address</code> argument.<br>
+</div>
+<br>
+<span id="2_CustomWorkers"><h2>Custom Workers</h2></span><br>
+<pre><span id="VALrun_custom"><span class="keyword">val</span> run_custom</span> : <code class="type">?input:Unix.file_descr -><br>       ?output:Unix.file_descr -> <a href="Procord_worker.html#TYPEtask">task</a> list -> unit</code></pre><div class="info">
+Run a worker which will accomplish one task amongst several on given
+      file descriptors.<br>
+</div>
+<div class="param_info"><code class="code">input</code> : File descriptor for reading. Default <code class="code">Unix.stdin</code>.</div>
+<div class="param_info"><code class="code">output</code> : File descriptor for writing. Default <code class="code">Unix.stdout</code>.
+<p>
+
+      The last parameter is the list of tasks that the worker can handle.</div>
+<pre><span id="VALrun_listen"><span class="keyword">val</span> run_listen</span> : <code class="type">?continue:(unit -> bool) -><br>       ?accept:(Unix.sockaddr -> bool) -><br>       ?max_simultaneous_tasks:int -><br>       ?reuse_address:bool -><br>       hostname:string -> port:int -> <a href="Procord_worker.html#TYPEtask">task</a> list -> unit</code></pre><div class="info">
+Run a worker which will listen for network connections.<br>
+</div>
+<div class="param_info"><code class="code">continue</code> : Function called before each call to
+        <code class="code">Unix.accept</code>. If it returns <code class="code">false</code>, the worker stops
+        accepting new connections, and will exit after all tasks are
+        executed. If unspecified, <code class="code">run_listen</code> never returns.</div>
+<div class="param_info"><code class="code">accept</code> : Function called after each call to <code class="code">Unix.accept</code>.
+        It is given the remote address of the new connection.
+        If it returns <code class="code">false</code>, the connection is closed immediately.</div>
+<div class="param_info"><code class="code">max_simultaneous_tasks</code> : The maximum number of tasks that
+        the server may execute at the same time. On Windows, only one
+        task can be executed at the same time (no <code class="code">fork</code>).</div>
+<div class="param_info"><code class="code">reuse_address</code> : If <code class="code">true</code>, set <code class="code">SO_REUSEADDR</code>, preventing the
+        "Address already in use" error. This is useful for debugging but
+        could potentially be abused by malware.</div>
+<div class="param_info"><code class="code">hostname</code> : Specifies the interface to listen to. Examples:<ul>
+<li><code class="code">"localhost"</code>: only accept local IPv4 connections;</li>
+<li><code class="code">"::1"</code>: only accept local IPv6 connections;</li>
+<li><code class="code">"0.0.0.0"</code>: accept all IPv4 connections;</li>
+<li><code class="code">"::"</code>: accept all IPv6 connections.</li>
+</ul>
+</div>
+<div class="param_info"><code class="code">port</code> : Specifies the port to listen to.
+<p>
+
+      Raise <code class="code">Unix_error</code> if the server cannot be established.</div>
+</body></html>
