@@ -37,7 +37,11 @@ There is a minimal, commented example to get you started in:
 
     examples/minimal.ml
 
-You can generate the OCamlDoc documentation in HTML using:
+You can browse the OCamlDoc documentation here:
+
+http://cryptosense.github.io/procord/api/index.html
+
+You can also generate the OCamlDoc documentation yourself using:
 
     make doc
 
