@@ -16,9 +16,6 @@ let rec fibo x =
 let fibo_worker, fibo_delegated =
   Procord_task.make "fibo" fibo
 
-let process input =
-  Procord_process.delegate fibo_delegated input
-
 (* Entry point. *)
 let () =
   (* We want our program to be able to act both as a worker (local or distant)
