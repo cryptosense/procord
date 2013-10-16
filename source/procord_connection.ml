@@ -876,17 +876,25 @@ let instanciate_waiter waiter =
 (* Default timeout is negative, i.e. infinite. *)
 let wait ?(timeout = -1.) waiter =
   let read, write, except = instanciate_waiter waiter in
-  try
-    match Unix.select read write except timeout with
-      | [], [], [] ->
-          false
-      | _ ->
+
+  (* Check that there is something to wait for. Else, with no timeout,
+     [Unix.select] would block forever. *)
+  if read = [] && write = [] && except = [] then
+    (* Not a timeout. In a way, something happened: the fact that there is
+       nothing to wait for anymore. *)
+    true
+  else
+    try
+      match Unix.select read write except timeout with
+        | [], [], [] ->
+            false
+        | _ ->
+            true
+    with
+      | Unix.Unix_error _ ->
+          (* May be EBADF. For sockets we want to interpret this as the socket
+             having been closed. *)
           true
-  with
-    | Unix.Unix_error _ ->
-        (* May be EBADF. For sockets we want to interpret this as the socket
-           having been closed. *)
-        true
 
 let wait' ?timeout waiter =
   let _x: bool = wait ?timeout waiter in ()
