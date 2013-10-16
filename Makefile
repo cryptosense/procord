@@ -14,7 +14,8 @@ OCAMLBUILD := $(OCAMLBUILD) -tag annot
 BYTE = source/procord.cma
 NATIVE = source/procord.cmxa
 DOC = documentation/procord.docdir/index.html
-TESTS = test/test.byte
+TESTS = test/test.byte examples/minimal.byte examples/recursive.byte \
+  examples/redirect.byte
 
 ################################################################################
 

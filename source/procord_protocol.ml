@@ -9,6 +9,7 @@ type error =
   | E_ill_formed_message
   | E_message_too_long
   | E_disconnected
+  | E_invalid_print_destination
 
 exception Error of error
   (** An error has occurred. *)
@@ -28,6 +29,8 @@ let error_message error =
         "Message too long"
     | E_disconnected ->
         "Disconnected"
+    | E_invalid_print_destination ->
+        "Invalid print destination"
 
 let () =
   Printexc.register_printer
@@ -42,6 +45,15 @@ let () =
 (*                                   Messages                                 *)
 (******************************************************************************)
 
+(** Possible destinations when sending messages to print.
+
+    Possible values are:
+    - [D_stdout]: print to [Format.std_formatter];
+    - [D_stderr]: print to [Format.err_formatter]. *)
+type print_destination =
+  | D_stdout
+  | D_stderr
+
 (** Messages that can be received. *)
 type message =
   | M_none
@@ -50,12 +62,36 @@ type message =
   | M_exception of string (** Serialized exception. *)
   | M_unknown_exception of string (** Exception as a string using [Printexc]. *)
   | M_error of error
+  | M_print of print_destination * string (** Destination, message to print. *)
+  | M_flush of print_destination
 
 let max_message_size = ref max_int
 
 let set_max_message_size size =
   (* We set a minimum size of 1 to ensure that errors can go through. *) 
   max_message_size := max size 1
+
+(******************************************************************************)
+(*                          Serializing Destinations                          *)
+(******************************************************************************)
+
+(* Convert a destination into a string. *)
+let serialize_destination destination =
+  match destination with
+    | D_stdout -> "O"
+    | D_stderr -> "E"
+
+(* Parse a destination from a string. Return the destination and the offset
+   of the first character after it. *)
+let deserialize_destination string =
+  if String.length string > 0 then
+    match string.[0] with
+      | 'O' -> D_stdout, 1
+      | 'E' -> D_stderr, 1
+      | _ ->
+          error E_invalid_print_destination
+  else
+    error E_invalid_print_destination
 
 (******************************************************************************)
 (*                           Non-Blocking Functions                           *)
@@ -89,8 +125,15 @@ let send connection message =
             | E_ill_formed_message -> "2"
             | E_message_too_long -> "3"
             | E_disconnected -> "4"
+            | E_invalid_print_destination -> "5"
         in
         send_message connection 'E' body
+    | M_print (destination, message) ->
+        let body = serialize_destination destination ^ message in
+        send_message connection 'P' body
+    | M_flush destination ->
+        let body = serialize_destination destination in
+        send_message connection 'F' body
 
 let parse_message kind body =
   match kind with
@@ -110,8 +153,21 @@ let parse_message kind body =
             | "2" -> M_error E_ill_formed_message
             | "3" -> M_error E_message_too_long
             | "4" -> M_error E_disconnected
+            | "5" -> M_error E_invalid_print_destination
             | _ -> error E_ill_formed_message
         end
+    | 'P' ->
+        let destination, message_offset = deserialize_destination body in
+        let message =
+          String.sub body message_offset (String.length body - message_offset)
+        in
+        M_print (destination, message)
+    | 'F' ->
+        let destination, message_offset = deserialize_destination body in
+        if message_offset <> String.length body then
+          error E_ill_formed_message
+        else
+          M_flush destination
     | _ ->
         error E_ill_formed_message
 
@@ -212,6 +268,12 @@ let send_unknown_exception connection exn_as_string =
 let send_error connection error =
   send connection (M_error error)
 
+let send_print connection destination message =
+  send connection (M_print (destination, message))
+
+let send_flush connection destination =
+  send connection (M_flush destination)
+
 (******************************************************************************)
 (*                             Blocking Functions                             *)
 (******************************************************************************)
@@ -250,7 +312,9 @@ let blocking_receive_task_name connection =
     | M_value _
     | M_exception _
     | M_unknown_exception _
-    | M_error _ ->
+    | M_error _
+    | M_print _
+    | M_flush _ ->
         (* Unexpected message. *)
         error E_unexpected_message
 
@@ -263,6 +327,17 @@ let blocking_receive_value connection =
     | M_task_name _
     | M_exception _
     | M_unknown_exception _
-    | M_error _ ->
+    | M_error _
+    | M_print _
+    | M_flush _ ->
         (* Unexpected message. *)
         error E_unexpected_message
+
+(******************************************************************************)
+(*                         Formatters and Destinations                        *)
+(******************************************************************************)
+
+let formatter_of_destination destination =
+  match destination with
+    | D_stdout -> Format.std_formatter
+    | D_stderr -> Format.err_formatter

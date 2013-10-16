@@ -1,3 +1,86 @@
+(******************************************************************************)
+(*                                  Redirections                              *)
+(******************************************************************************)
+
+(* Store the current connection, if any. *)
+let current_connection = ref None
+
+(* Return the current connection, if any. *)
+let get_connection () =
+  !current_connection
+
+(******************************************************************************)
+
+let redirect_formatter formatter destination =
+  (* Retrieve the current printing functions of the formatter,
+     for the case where we try to redirect a formatter to itself. *)
+  let old_print, old_flush =
+    Format.pp_get_formatter_output_functions formatter ()
+  in
+
+  (* New printing function.
+     It is kind of a dynamic call: the actual destination is resolved each
+     time something is printed. *)
+  let new_print string offset length =
+    match get_connection () with
+      | None ->
+          (* We are the main program. *)
+          let new_formatter =
+            Procord_protocol.formatter_of_destination destination
+          in
+          if formatter == new_formatter then
+            (* We are trying to print to ourself. *)
+            old_print string offset length
+          else
+            (* Printing to another formatter. *)
+            let new_print, _ =
+              Format.pp_get_formatter_output_functions new_formatter ()
+            in
+            new_print string offset length
+
+      | Some connection ->
+          (* We are a connected worker. *)
+          let message = String.sub string offset length in
+          Procord_protocol.send_print connection destination message
+  in
+
+  (* New flushing function. *)
+  let new_flush () =
+    match get_connection () with
+      | None ->
+          (* We are the main program. *)
+          let new_formatter =
+            Procord_protocol.formatter_of_destination destination
+          in
+          if formatter == new_formatter then
+            (* We are trying to print to ourself. *)
+            old_flush ()
+          else
+            (* Printing to another formatter. *)
+            let _, new_flush =
+              Format.pp_get_formatter_output_functions new_formatter ()
+            in
+            new_flush ()
+
+      | Some connection ->
+          (* We are a connected worker. *)
+          Procord_protocol.send_flush connection destination
+  in
+
+  (* Redirect. *)
+  Format.pp_set_formatter_output_functions
+    formatter
+    new_print
+    new_flush
+
+let redirect_standard_formatters () =
+  redirect_formatter Format.std_formatter Procord_protocol.D_stdout;
+  redirect_formatter Format.err_formatter Procord_protocol.D_stderr
+
+(******************************************************************************)
+(*                                   Task Type                                *)
+(******************************************************************************)
+
 (* Hide existential types in a closure. *)
 type task =
   {
@@ -6,17 +89,27 @@ type task =
     write_exception: exn -> string;
   }
 
+(******************************************************************************)
+(*                                    Helpers                                 *)
+(******************************************************************************)
+
 (* Wait until everything has been sent, and close a connection. *)
 let send_and_disconnect connection =
   Procord_connection.close_nicely connection;
   while Procord_connection.alive connection do
+    (* TODO: passive waiting. *)
     Procord_connection.update connection
   done
 
 (******************************************************************************)
+(*                                   Run a Task                               *)
+(******************************************************************************)
 
 (* Run a task on a given connection. *)
 let run_task worker_task connection =
+  (* Set the current connection. *)
+  current_connection := Some connection;
+
   (* Receive the input. *)
   let serialized_input = Procord_protocol.blocking_receive_value connection in
 
@@ -260,6 +353,9 @@ let run
     ?(usage = "Usage: " ^ Filename.basename Sys.executable_name ^ " [options]")
     ?(anon = fun arg -> raise (Arg.Bad ("Invalid argument: " ^ arg)))
     tasks =
+
+  (* Redirect [Format.std_formatter] and [Format.err_formatter]. *)
+  redirect_standard_formatters ();
 
   (* Parameters. *)
   let mode = ref `procord_none in

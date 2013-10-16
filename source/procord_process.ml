@@ -114,71 +114,102 @@ let update_delegated task connection input =
      and so that it does not stay in the closure of [update] forever. *)
   let state = ref (`just_started input) in
 
-  (* Auxiliary function for [update] below. *)
+  (* Auxiliary function for [update_send_and_receive] below.
+     It sends the input. It assumes [!state = `just_started]. *)
+  let update_just_started input =
+    (* Send the task name. *)
+    let task_name = Procord_task.delegated_task_name task in
+    Procord_protocol.send_task_name connection task_name;
+    (* Send the input value. *)
+    let serialized_input = Procord_task.write_input task input in
+    Procord_protocol.send_value connection serialized_input;
+    (* Update the state. *)
+    state := `waiting_for_output
+  in
+
+  let rec update_waiting_for_output () =
+    match Procord_protocol.receive connection with
+      | Procord_protocol.M_none ->
+          (* Still waiting. *)
+          Working
+
+      | Procord_protocol.M_value serialized_output ->
+          (* Deserialize the output. *)
+          let output =
+            Procord_task.read_output task serialized_output
+          in
+          Success output
+
+      | Procord_protocol.M_task_name _ ->
+          (* Unexpected message: the worker is not supposed to give
+             us orders. *)
+          Procord_protocol.error Procord_protocol.E_unexpected_message
+
+      | Procord_protocol.M_exception serialized_exn ->
+          begin
+            match Procord_task.read_exception task with
+              | None ->
+                  (* No deserializing function. *)
+                  Error (Worker_unknown_exception serialized_exn)
+              | Some read_exception ->
+                  let exn = read_exception serialized_exn in
+                  Exception exn
+          end
+
+      | Procord_protocol.M_unknown_exception exn_as_string ->
+          Error (Worker_unknown_exception exn_as_string)
+
+      | Procord_protocol.M_error error ->
+          begin
+            match error with
+              | Procord_protocol.E_task_not_supported ->
+                  Error
+                    (No_worker_available
+                       (Procord_task.delegated_task_name task))
+
+              | Procord_protocol.E_disconnected ->
+                  (* Unexpected message: the worker cannot send us
+                     E_disconnected if he is disconnected. *)
+                  Procord_protocol.error Procord_protocol.E_unexpected_message;
+
+              | Procord_protocol.E_unexpected_message
+              | Procord_protocol.E_ill_formed_message
+              | Procord_protocol.E_message_too_long as error ->
+                  Procord_protocol.error error
+
+              | Procord_protocol.E_invalid_print_destination ->
+                  (* The worker should not receive print commands.
+                     So it should not send this kind of error. *)
+                  Procord_protocol.error error
+          end
+
+      | Procord_protocol.M_print (destination, message) ->
+          let formatter =
+            Procord_protocol.formatter_of_destination destination
+          in
+          Format.pp_print_string formatter message;
+          (* Continue reading messages, there might be more in the queue. *)
+          update_waiting_for_output ()
+
+      | Procord_protocol.M_flush destination ->
+          let formatter =
+            Procord_protocol.formatter_of_destination destination
+          in
+          Format.pp_print_flush formatter ();
+          (* Continue reading messages, there might be more in the queue. *)
+          update_waiting_for_output ()
+  in
+
+  (* Auxiliary function for [update] below.
+     It sends and receive what needs to be sent and received. *)
   let update_send_and_receive () =
     match !state with
       | `just_started input ->
-          (* Send the task name. *)
-          let task_name = Procord_task.delegated_task_name task in
-          Procord_protocol.send_task_name connection task_name;
-          (* Send the input value. *)
-          let serialized_input = Procord_task.write_input task input in
-          Procord_protocol.send_value connection serialized_input;
-          (* Update the state. *)
-          state := `waiting_for_output;
+          update_just_started input;
           Working
 
       | `waiting_for_output ->
-          begin
-            match Procord_protocol.receive connection with
-              | Procord_protocol.M_none ->
-                  (* Still waiting. *)
-                  Working
-
-              | Procord_protocol.M_value serialized_output ->
-                  (* Deserialize the output. *)
-                  let output =
-                    Procord_task.read_output task serialized_output
-                  in
-                  Success output
-
-              | Procord_protocol.M_task_name _ ->
-                  (* Unexpected message: the worker is not supposed to give
-                     us orders. *)
-                  Procord_protocol.error Procord_protocol.E_unexpected_message
-
-              | Procord_protocol.M_exception serialized_exn ->
-                  begin
-                    match Procord_task.read_exception task with
-                      | None ->
-                          (* No deserializing function. *)
-                          Error (Worker_unknown_exception serialized_exn)
-                      | Some read_exception ->
-                          let exn = read_exception serialized_exn in
-                          Exception exn
-                  end
-
-              | Procord_protocol.M_unknown_exception exn_as_string ->
-                  Error (Worker_unknown_exception exn_as_string)
-
-              | Procord_protocol.M_error error ->
-                  match error with
-                    | Procord_protocol.E_task_not_supported ->
-                        Error
-                          (No_worker_available
-                             (Procord_task.delegated_task_name task))
-
-                    | Procord_protocol.E_disconnected ->
-                        (* Unexpected message: the worker cannot send us
-                           E_disconnected if he is disconnected. *)
-                        Procord_protocol.error
-                          Procord_protocol.E_unexpected_message
-
-                    | Procord_protocol.E_unexpected_message
-                    | Procord_protocol.E_ill_formed_message
-                    | Procord_protocol.E_message_too_long as error ->
-                        Procord_protocol.error error
-          end
+          update_waiting_for_output ()
   in
 
   (* If we received everything we need, close the connection. *)
@@ -328,6 +359,7 @@ let delegate task input =
       Sys.executable_name
       [| Sys.executable_name; "--procord-worker" |]
       task
+      ~stderr: Unix.stderr
       input
 
   else

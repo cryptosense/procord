@@ -9,6 +9,7 @@ type error =
   | E_ill_formed_message
   | E_message_too_long
   | E_disconnected
+  | E_invalid_print_destination
 
 exception Error of error
   (** An error has occurred. *)
@@ -21,6 +22,15 @@ val error_message: error -> string
 
 (** {2 Messages} *)
 
+(** Possible destinations when sending messages to print.
+
+    Possible values are:
+    - [D_stdout]: print to [Format.std_formatter];
+    - [D_stderr]: print to [Format.err_formatter]. *)
+type print_destination =
+  | D_stdout
+  | D_stderr
+
 (** Messages that can be received. *)
 type message =
   | M_none
@@ -29,6 +39,8 @@ type message =
   | M_exception of string (** Serialized exception. *)
   | M_unknown_exception of string (** Exception as a string using [Printexc]. *)
   | M_error of error
+  | M_print of print_destination * string (** Destination, message to print. *)
+  | M_flush of print_destination
 
 val set_max_message_size: int -> unit
   (** Set the maximum size of packets.
@@ -61,10 +73,24 @@ val send_unknown_exception: 'a Procord_connection.t -> string -> unit
 val send_error: 'a Procord_connection.t -> error -> unit
   (** Send an error message. *)
 
-val receive: 'a Procord_connection.t -> message
-  (** Try to receive a message from a connection.
+val send_print: 'a Procord_connection.t -> print_destination -> string -> unit
+  (** Send a message to be printed using [Format.fprintf].
 
-      May raise [Error E_ill_formed_message]. *)
+      The worker can use this to make the main program call
+      [Format.fprintf]. It is unspecified whether the main program can
+      send messages like this to the worker. *)
+
+val send_flush: 'a Procord_connection.t -> print_destination -> unit
+  (** Send a flush request.
+
+      The worker can use this to make the main program call
+      [Format.pp_print_flush]. It is unspecified whether the main
+      program can send messages like this to the worker. *)
+
+val receive: 'a Procord_connection.t -> message
+(** Try to receive a message from a connection.
+
+    May raise [Error E_ill_formed_message]. *)
 
 (** {2 Blocking Functions} *)
 
@@ -82,6 +108,11 @@ val blocking_receive_value: 'a Procord_connection.t -> string
   (** Receive a serialized value.
 
       May raise [Error]. *)
+
+(** {2 Formatters and Destinations} *)
+
+val formatter_of_destination: print_destination -> Format.formatter
+  (** Return the formatter corresponding to a destination. *)
 
 (** {2 Protocol Description} *)
 
@@ -122,13 +153,32 @@ val blocking_receive_value: 'a Procord_connection.t -> string
         ["1"] - [E_unexpected_message];
         ["2"] - [E_ill_formed_message];
         ["3"] - [E_message_too_long];
-        ["4"] - [E_disconnected].
+        ["4"] - [E_disconnected];
+        ["5"] - [E_invalid_print_destination].
+
+    - [M_print]:
+      KIND ['P'];
+      BODY starts with the destination, which is one of those
+      (quotes not included):
+        ["O"] - [`stdout];
+        ["E"] - [`stderr].
+      BODY continues with the message to be printed.
+
+    - [M_flush]:
+      KIND ['F'];
+      BODY is one of those (quotes not included):
+        ["O"] - [`stdout];
+        ["E"] - [`stderr].
 
     Examples:
 
-    - ["1E2"] has SIZE 1, KIND ['E'] (M_error),
+    - ["1E2"] has SIZE 1, KIND ['E'] ([M_error]),
       and BODY ["2"] ([E_disconnected]).
 
-    - ["5Thelloworld"] has SIZE 5, KIND ['T'] (M_task_name),
+    - ["5Thelloworld"] has SIZE 5, KIND ['T'] ([M_task_name]),
       and BODY ["hello"].
-      Remainder ["world"] is not part of the message. *)
+      Remainder ["world"] is not part of the message.
+
+    - ["8POmessage"] has SIZE 8, KIND ['P'] ([M_print]),
+      and BODY ["Omessage"].
+      It is a request to print ["message"] on [Format.std_formatter]. *)

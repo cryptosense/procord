@@ -146,3 +146,54 @@ val run_listen:
       @param port Specifies the port to listen to.
 
       Raise [Unix_error] if the server cannot be established. *)
+
+(** {2 Redirecting Standard Outputs} *)
+
+(** Workers should not print on their own [stdout] as, in local mode,
+    workers communicate with the main program using [stdout]. In remote
+    mode, workers communicate with the main program using sockets, and
+    writing on [stdout] is not an issue. However, this will print on the
+    standard output of the worker, not of the main program.
+
+    Using the functions below allows you to continue using the
+    [Format] module normally. Everything you write will actually be
+    printed by the main program. This allows you to write your tasks
+    as if they were running in the main program process.
+    The functions below have no effect on the input/output functions
+    of [Pervasives], [Unix], [Printf] and [Scanf]. *)
+
+(** {3 Default Redirections} *)
+
+val redirect_standard_formatters: unit -> unit
+  (** Redirect [Format.std_formatter] and [Format.err_formatter] to the main
+      program.
+
+      Everything you write to [Format.std_formatter] (for example using
+      [Format.printf]) will be sent to the main program, which will print
+      it on its own [stdout].
+
+      Similarly, everything you write to [Format.err_formatter] (for
+      example using [Format.eprintf]) will be sent to the main program,
+      which will print it on its own [stderr].
+
+      This function is automatically called by {!run}, but not by
+      other [run_*] functions.
+
+      You may call this function from the main program, typically
+      before calling a [run_*] function, or from a task. The
+      redirection will continue if the main program becomes a
+      worker. *)
+
+(** {3 Custom Redirections} *)
+
+val redirect_formatter:
+  Format.formatter -> Procord_protocol.print_destination -> unit
+  (** Redirect a formatter.
+
+      Everything you write to the formatter given in argument will be
+      redirected to the specified destination of the main program.
+
+      You may call this function from the main program, typically
+      before calling a [run_*] function, or from a task. The
+      redirection will continue if the main program becomes a
+      worker. *)

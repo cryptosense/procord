@@ -30,6 +30,9 @@ Some tricky stuff about file descriptors and sockets...
   At first glance one could expect Unix.select to say there is an exceptional
   condition. "Of course" it would be a bad idea.
 
+- If the remote peer closes the connection, Unix.select may actually
+  block. (on Linux)
+
 - If we cannot send, this does not mean we cannot receive. (See Unix.shutdown.)
   But on the other hand, maybe it means EBADF is coming if we try to
   receive?
