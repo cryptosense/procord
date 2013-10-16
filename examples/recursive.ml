@@ -14,20 +14,10 @@
    then run:
      ./recursive *)
 
-(* This reference will be set later to the delegated task. *)
-let fibo_delegated_ref = ref None
-
-(* Retrieve the contents of [fibo_delegated]. *)
-let get_fibo_delegated () =
-  match !fibo_delegated_ref with
-    | None ->
-        failwith "get_fibo_delegated: fibo_delegated is not initialized"
-    | Some fibo_delegated ->
-        fibo_delegated
-
 (* First, let's write the function that we want to run in another process. *)
 let rec fibo x =
-  let fibo_delegated = get_fibo_delegated () in
+  (* Get the delegated task. *)
+  let fibo_delegated = snd (Lazy.force fibo_tasks) in
 
   if x <= 1 then
     1
@@ -79,12 +69,11 @@ let rec fibo x =
     result1 + result2
 
 (* Define a task for our function. *)
-let fibo_worker, fibo_delegated =
-  Procord_task.make "fibo" fibo
+and fibo_tasks =
+  lazy (Procord_task.make "fibo" fibo)
 
-(* Fill the reference to the delegated task. *)
-let () =
-  fibo_delegated_ref := Some fibo_delegated
+(* Evaluate [Procord_task.make] now. *)
+let fibo_worker, fibo_delegated = Lazy.force fibo_tasks
 
 (* Entry point. It is a copy-paste of minimal.ml. *)
 let () =
