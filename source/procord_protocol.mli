@@ -22,14 +22,22 @@ val error_message: error -> string
 
 (** {2 Messages} *)
 
+(** Custom destination identifiers.
+
+    Custom destinations are identified by a single character which should
+    not be ['O'] nor ['E']. You can typically use ['0'], ['1'], ..., ['9']. *)
+type custom_destination = char
+
 (** Possible destinations when sending messages to print.
 
     Possible values are:
     - [D_stdout]: print to [Format.std_formatter];
-    - [D_stderr]: print to [Format.err_formatter]. *)
+    - [D_stderr]: print to [Format.err_formatter];
+    - [D_custom]: print to a custom destination. *)
 type print_destination =
   | D_stdout
   | D_stderr
+  | D_custom of custom_destination
 
 (** Messages that can be received. *)
 type message =
@@ -111,8 +119,24 @@ val blocking_receive_value: 'a Procord_connection.t -> string
 
 (** {2 Formatters and Destinations} *)
 
-val formatter_of_destination: print_destination -> Format.formatter
-  (** Return the formatter corresponding to a destination. *)
+val register_destination: custom_destination -> Format.formatter -> unit
+  (** Register a formatter as a custom destination.
+      If the worker sends to this destination, the main program will
+      print on this formatter. To send to this destination, the worker
+      can use [Procord_worker.make_redirected_formatter].
+
+      Multiples destinations are not supported: only the last formatter
+      receives the message.
+
+      This can be called before [Procord_worker.run], although it only
+      affects the main program. From the worker, you should use
+      [Procord_worker.redirect_formatter] or
+      [Procord_worker.formatter_of_destination]. *)
+
+val formatter_of_destination: print_destination -> Format.formatter option
+  (** Return the formatter corresponding to a destination.
+
+      Return [None] if the destination custom and unregistered. *)
 
 (** {2 Protocol Description} *)
 
@@ -161,14 +185,16 @@ val formatter_of_destination: print_destination -> Format.formatter
       BODY starts with the destination, which is one of those
       (quotes not included):
         ["O"] - [`stdout];
-        ["E"] - [`stderr].
+        ["E"] - [`stderr];
+        any other character - custom destination.
       BODY continues with the message to be printed.
 
     - [M_flush]:
       KIND ['F'];
       BODY is one of those (quotes not included):
         ["O"] - [`stdout];
-        ["E"] - [`stderr].
+        ["E"] - [`stderr];
+        any other character - custom destination.
 
     Examples:
 

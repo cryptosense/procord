@@ -28,15 +28,22 @@ let redirect_formatter formatter destination =
           let new_formatter =
             Procord_protocol.formatter_of_destination destination
           in
-          if formatter == new_formatter then
-            (* We are trying to print to ourself. *)
-            old_print string offset length
-          else
-            (* Printing to another formatter. *)
-            let new_print, _ =
-              Format.pp_get_formatter_output_functions new_formatter ()
-            in
-            new_print string offset length
+          begin
+            match new_formatter with
+              | None ->
+                  (* The destination has not been registered, do nothing. *)
+                  ()
+              | Some new_formatter ->
+                  if formatter == new_formatter then
+                    (* We are trying to print to ourself. *)
+                    old_print string offset length
+                  else
+                    (* Printing to another formatter. *)
+                    let new_print, _ =
+                      Format.pp_get_formatter_output_functions new_formatter ()
+                    in
+                    new_print string offset length
+          end
 
       | Some connection ->
           (* We are a connected worker. *)
@@ -52,15 +59,22 @@ let redirect_formatter formatter destination =
           let new_formatter =
             Procord_protocol.formatter_of_destination destination
           in
-          if formatter == new_formatter then
-            (* We are trying to print to ourself. *)
-            old_flush ()
-          else
-            (* Printing to another formatter. *)
-            let _, new_flush =
-              Format.pp_get_formatter_output_functions new_formatter ()
-            in
-            new_flush ()
+          begin
+            match new_formatter with
+              | None ->
+                  (* The destination has not been registered, do nothing. *)
+                  ()
+              | Some new_formatter ->
+                  if formatter == new_formatter then
+                    (* We are trying to print to ourself. *)
+                    old_flush ()
+                  else
+                    (* Printing to another formatter. *)
+                    let _, new_flush =
+                      Format.pp_get_formatter_output_functions new_formatter ()
+                    in
+                    new_flush ()
+          end
 
       | Some connection ->
           (* We are a connected worker. *)
@@ -76,6 +90,18 @@ let redirect_formatter formatter destination =
     formatter
     new_print
     new_flush
+
+let make_redirected_formatter destination =
+  (* Make a dummy formatter. *)
+  let formatter =
+    Format.make_formatter (fun _ _ _ -> ()) (fun () -> ())
+  in
+
+  (* Redirect the dummy formatter. *)
+  redirect_formatter formatter destination;
+
+  (* Return the new formatter. *)
+  formatter
 
 let redirect_standard_formatters () =
   redirect_formatter Format.std_formatter Procord_protocol.D_stdout;

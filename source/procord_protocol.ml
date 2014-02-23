@@ -45,14 +45,22 @@ let () =
 (*                                   Messages                                 *)
 (******************************************************************************)
 
+(** Custom destination identifiers.
+
+    Custom destinations are identified by a single character which should
+    not be ['O'] nor ['E']. You can typically use ['0'], ['1'], ..., ['9']. *)
+type custom_destination = char
+
 (** Possible destinations when sending messages to print.
 
     Possible values are:
     - [D_stdout]: print to [Format.std_formatter];
-    - [D_stderr]: print to [Format.err_formatter]. *)
+    - [D_stderr]: print to [Format.err_formatter];
+    - [D_custom]: print to a custom destination. *)
 type print_destination =
   | D_stdout
   | D_stderr
+  | D_custom of custom_destination
 
 (** Messages that can be received. *)
 type message =
@@ -80,6 +88,7 @@ let serialize_destination destination =
   match destination with
     | D_stdout -> "O"
     | D_stderr -> "E"
+    | D_custom char -> String.make 1 char
 
 (* Parse a destination from a string. Return the destination and the offset
    of the first character after it. *)
@@ -88,8 +97,7 @@ let deserialize_destination string =
     match string.[0] with
       | 'O' -> D_stdout, 1
       | 'E' -> D_stderr, 1
-      | _ ->
-          error E_invalid_print_destination
+      | c -> D_custom c, 1
   else
     error E_invalid_print_destination
 
@@ -337,7 +345,20 @@ let blocking_receive_value connection =
 (*                         Formatters and Destinations                        *)
 (******************************************************************************)
 
+let destinations: (custom_destination, Format.formatter) Hashtbl.t =
+  Hashtbl.create 16
+
+let register_destination destination formatter =
+  Hashtbl.add destinations destination formatter
+
 let formatter_of_destination destination =
   match destination with
-    | D_stdout -> Format.std_formatter
-    | D_stderr -> Format.err_formatter
+    | D_stdout ->
+        Some Format.std_formatter
+    | D_stderr ->
+        Some Format.err_formatter
+    | D_custom destination ->
+        try
+          Some (Hashtbl.find destinations destination)
+        with Not_found ->
+          None

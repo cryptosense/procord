@@ -211,3 +211,7 @@ val redirect_formatter:
       before calling a [run_*] function, or from a task. The
       redirection will continue if the main program becomes a
       worker. *)
+
+val make_redirected_formatter:
+  Procord_protocol.print_destination -> Format.formatter
+  (** Create a new formatter which is already redirected. *)

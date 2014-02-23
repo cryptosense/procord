@@ -187,7 +187,13 @@ let update_delegated task connection input =
           let formatter =
             Procord_protocol.formatter_of_destination destination
           in
-          Format.pp_print_string formatter message;
+          begin
+            match formatter with
+              | None ->
+                  ()
+              | Some formatter ->
+                  Format.pp_print_string formatter message
+          end;
           (* Continue reading messages, there might be more in the queue. *)
           update_waiting_for_output ()
 
@@ -195,7 +201,13 @@ let update_delegated task connection input =
           let formatter =
             Procord_protocol.formatter_of_destination destination
           in
-          Format.pp_print_flush formatter ();
+          begin
+            match formatter with
+              | None ->
+                  ()
+              | Some formatter ->
+                  Format.pp_print_flush formatter ()
+          end;
           (* Continue reading messages, there might be more in the queue. *)
           update_waiting_for_output ()
   in
