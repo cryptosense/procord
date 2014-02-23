@@ -64,7 +64,11 @@ let redirect_formatter formatter destination =
 
       | Some connection ->
           (* We are a connected worker. *)
-          Procord_protocol.send_flush connection destination
+          Procord_protocol.send_flush connection destination;
+
+          (* We need to actually send the data.
+             This may not send everything, so this is not perfect. *)
+          Procord_connection.update connection
   in
 
   (* Redirect. *)

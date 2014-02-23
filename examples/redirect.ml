@@ -23,6 +23,9 @@ let rec fibo x =
   (* Print something in the main program's standard output. *)
   Format.printf "Working on fibo %d.\n%!" x;
 
+  (* Sleep a bit, to show that the output was flushed. *)
+  Unix.sleep 1;
+
   (* Compute the result. *)
   let result = if x <= 1 then 1 else fibo (x - 1) + fibo (x - 2) in
 
