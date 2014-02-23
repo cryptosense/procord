@@ -39,7 +39,11 @@ val run:
         tasks that may be executed at the same time;
       - [--procord-reuse-address]:
         option for [--procord-server] which tells the server to set the
-        [SO_REUSEADDR] option on the listening socket.
+        [SO_REUSEADDR] option on the listening socket;
+      - [--procord-dont-fork]:
+        option for [--procord-server] which removes the call to
+        [Unix.fork], imlying that only one task can be executed at the same
+        time and that crashing a task crashes the server as well.
 
       If neither [--procord-worker] nor [--procord-server] are given, the
       function returns immediately. Else, the function never returns. Thus
@@ -96,6 +100,13 @@ val get_reuse_address: unit -> bool
 val set_reuse_address: bool -> unit
   (** Set the [--procord-reuse-address] argument. *)
 
+val get_dont_fork: unit -> bool
+  (** Get the [--procord-dont-fork] argument.
+      Default value is [false]. *)
+
+val set_dont_fork: bool -> unit
+  (** Set the [--procord-dont-fork] argument. *)
+
 (** {2 Custom Workers} *)
 
 val run_custom:
@@ -115,6 +126,7 @@ val run_listen:
   ?accept: (Unix.sockaddr -> bool) ->
   ?max_simultaneous_tasks: int ->
   ?reuse_address: bool ->
+  ?dont_fork: bool ->
   hostname: string ->
   port: int ->
   task list -> unit
@@ -136,6 +148,8 @@ val run_listen:
       @param reuse_address If [true], set [SO_REUSEADDR], preventing the
         "Address already in use" error. This is useful for debugging but
         could potentially be abused by malware.
+
+      @param dont_fork If [true], do not fork to run the tasks.
 
       @param hostname Specifies the interface to listen to. Examples:
       - ["localhost"]: only accept local IPv4 connections;

@@ -203,6 +203,7 @@ let run_listen
     ?(accept = fun _ -> true)
     ?max_simultaneous_tasks
     ?(reuse_address = false)
+    ?(dont_fork = false)
     ~hostname
     ~port
     tasks =
@@ -248,21 +249,24 @@ let run_listen
 
           (* Fork if possible and execute the task. *)
           match
-            try
-              let pid = Unix.fork () in
-              if pid = 0 then
-                (* We are the child process. *)
-                `child
-              else
-                begin
-                  (* We are the parent process. *)
-                  incr children_count;
-                  `parent
-                end
-            with
-              | _ ->
-                  (* Cannot fork, just run in the current process. *)
-                  `cannot_fork
+            if dont_fork then
+              `cannot_fork
+            else
+              try
+                let pid = Unix.fork () in
+                if pid = 0 then
+                  (* We are the child process. *)
+                  `child
+                else
+                  begin
+                    (* We are the parent process. *)
+                    incr children_count;
+                    `parent
+                  end
+              with
+                | _ ->
+                    (* Cannot fork, just run in the current process. *)
+                    `cannot_fork
           with
             | `child ->
                 (* The child should run the task and exit. *)
@@ -333,6 +337,7 @@ let hostname = ref ""
 let port = ref 1111
 let max_simultaneous_tasks = ref None
 let reuse_address = ref false
+let dont_fork = ref false
 
 let get_input_file () = !input_file
 let get_output_file () = !output_file
@@ -340,6 +345,7 @@ let get_hostname () = !hostname
 let get_port () = !port
 let get_max_simultaneous_tasks () = !max_simultaneous_tasks
 let get_reuse_address () = !reuse_address
+let get_dont_fork () = !dont_fork
 
 let set_input_file value = input_file := value
 let set_output_file value = output_file := value
@@ -347,6 +353,7 @@ let set_hostname value = hostname := value
 let set_port value = port := value
 let set_max_simultaneous_tasks value = max_simultaneous_tasks := value
 let set_reuse_address value = reuse_address := value
+let set_dont_fork value = dont_fork := value
 
 let run
     ?(spec = [])
@@ -389,6 +396,9 @@ let run
       Arg.Set reuse_address,
       " Set the SO_REUSEADDR option to the listening socket to prevent \
        Address Already in Use errors.";
+      "--procord-dont-fork",
+      Arg.Set dont_fork,
+      " Do not fork, just run the task in the current process.";
     ]
   in
 
@@ -433,6 +443,7 @@ let run
         run_listen
           ?max_simultaneous_tasks: !max_simultaneous_tasks
           ~reuse_address: !reuse_address
+          ~dont_fork: !dont_fork
           ~hostname: (if !hostname = "" then "0.0.0.0" else !hostname)
           ~port: !port
           tasks;
