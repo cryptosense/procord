@@ -157,6 +157,31 @@ val close_nicely: ?timeout: float -> 'a t -> unit
 val data: 'a t -> 'a
   (** Get the data associated to a connection. *)
 
+(** {2 Synchronous Interface} *)
+
+(** Synchronous interface to procord connections. *)
+module Sync:
+sig
+  (** Synchronous interface to procord connections. *)
+
+  (** These functions can be mixed with the asynchronous ones.
+      They wait until either their condition is met or until [state]
+      returns [Disconnected]. *)
+
+  (** Same as [connect], but wait until the connection is established. *)
+  val connect: ?timeout: float -> ?ping: string -> string ->
+    int -> 'a -> 'a t
+
+  (** Same as [close_nicely], but wait until the connection is closed. *)
+  val close_nicely: ?timeout: float -> 'a t -> unit
+
+  (** Same as [send], but wait until the sending buffer is empty. *)
+  val send: 'a t -> string -> unit
+
+  (** Same as [receive], but wait until the data is available. *)
+  val receive: 'a t -> int -> string option
+end
+
 (** {2 Addresses (Socket Connections Only)} *)
 
 val remote_address: 'a t -> Unix.sockaddr

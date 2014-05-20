@@ -965,3 +965,90 @@ let custom
 
   (* Make the connection. *)
   make_connection ?timeout ?ping kind data Connecting
+
+(******************************************************************************)
+(*                            Synchronous Interface                           *)
+(******************************************************************************)
+
+module Sync =
+struct
+  (* Wait until [condition] returns [true].
+     If waited more than [timeout], return [false].
+     Else, return [true]. *)
+  let wait_until ?timeout connection condition =
+    let waiter = waiter connection in
+    let ending_time =
+      match timeout with
+        | None ->
+            None
+        | Some timeout ->
+            Some (Unix.gettimeofday () +. timeout)
+    in
+    while not (condition ()) do
+      match ending_time with
+        | None ->
+            wait' waiter
+        | Some ending_time ->
+            let now = Unix.gettimeofday () in
+            if
+              ending_time <= now
+              || not (wait ~timeout: (ending_time -. now) waiter)
+            then
+              (* Timeout. [state] will return [Disconnected] and the
+                 loop will end. We could also just have waited until
+                 [check_auto_close] closes the connection, but it is
+                 awkward to choose the next timeout to give to
+                 [wait]. *)
+              disconnect (Some timed_out_error) connection
+    done
+
+  let connect ?timeout ?ping hostname port data =
+    let connection = connect ?timeout ?ping hostname port data in
+    wait_until ?timeout connection
+      begin fun () ->
+        update connection;
+        match state connection with
+          | Connecting -> false
+          | Connected
+          | Disconnecting
+          | Disconnected _ -> true
+      end;
+    connection
+
+  let close_nicely ?timeout connection =
+    close_nicely ?timeout connection;
+    wait_until ?timeout connection
+      begin fun () ->
+        update connection;
+        match state connection with
+          | Connecting
+          | Connected
+          | Disconnecting -> false
+          | Disconnected _ -> true
+      end
+
+  let send connection data =
+    send connection data;
+    wait_until ?timeout: connection.timeout connection
+      begin fun () ->
+        update connection;
+        match state connection with
+          | Connecting
+          | Connected
+          | Disconnecting -> not (sending connection)
+          | Disconnected _ -> true
+      end
+
+  let receive connection length =
+    wait_until ?timeout: connection.timeout connection
+      begin fun () ->
+        update connection;
+        match state connection with
+          | Connecting
+          | Connected
+          | Disconnecting ->
+              Procord_rope.length connection.receive_buffer >= length
+          | Disconnected _ -> true
+      end;
+    receive connection length
+end
