@@ -157,6 +157,9 @@ val close_nicely: ?timeout: float -> 'a t -> unit
 val data: 'a t -> 'a
   (** Get the data associated to a connection. *)
 
+val timeout: 'a t -> float option
+  (** Get the [timeout] argument which was passed to [connect] or [custom]. *)
+
 (** {2 Synchronous Interface} *)
 
 (** Synchronous interface to procord connections. *)

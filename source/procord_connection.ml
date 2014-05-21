@@ -729,6 +729,9 @@ let update connection =
 let data connection =
   connection.data
 
+let timeout connection =
+  connection.timeout
+
 let close connection =
   disconnect None connection
 
