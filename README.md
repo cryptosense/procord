@@ -25,7 +25,7 @@ Uninstalling
 To uninstall Procord, run:
 
     make uninstall
-  
+
 Or, if you no longer have the source:
 
     ocamlfind remove procord
