@@ -16,6 +16,7 @@
 <link title="Procord_rope" rel="Chapter" href="Procord_rope.html">
 <link title="Procord_task" rel="Chapter" href="Procord_task.html">
 <link title="Procord_worker" rel="Chapter" href="Procord_worker.html"><link title="Connections" rel="Section" href="#2_Connections">
+<link title="Synchronous Interface" rel="Section" href="#2_SynchronousInterface">
 <link title="Addresses (Socket Connections Only)" rel="Section" href="#2_AddressesSocketConnectionsOnly">
 <link title="Connection Sets" rel="Section" href="#2_ConnectionSets">
 <link title="Waiting" rel="Section" href="#2_Waiting">
@@ -23,12 +24,14 @@
 <title>Procord_connection</title>
 </head>
 <body>
-<div class="navbar">&nbsp;<a href="index.html">Up</a>
-&nbsp;<a href="Procord_process.html">Next</a>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Procord_process.html" title="Procord_process">Next</a>
 </div>
-<center><h1>Module <a href="type_Procord_connection.html">Procord_connection</a></h1></center>
-<br>
-<pre><span class="keyword">module</span> Procord_connection: <code class="code">sig</code> <a href="Procord_connection.html">..</a> <code class="code">end</code></pre>Connection through UNIX file descriptors.<br>
+<h1>Module <a href="type_Procord_connection.html">Procord_connection</a></h1>
+
+<pre><span class="keyword">module</span> Procord_connection: <code class="code">sig</code> <a href="Procord_connection.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Connection through UNIX file descriptors.<br>
+</div>
 <hr width="100%">
 <br>
 Connections are similar to sockets with the following added features:<ul>
@@ -43,9 +46,10 @@ This module can manage connections on sockets or on regular file
     parent process using <code class="code">Unix.stdin</code> for input and <code class="code">Unix.stdout</code> or
     <code class="code">Unix.stderr</code> for output; or simulate a connection through pipes.<br>
 <br>
-<span id="2_Connections"><h2>Connections</h2></span><br>
+<h2 id="2_Connections">Connections</h2><br>
+
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> </pre>
-<div class="info">
+<div class="info ">
 Connections, i.e. sockets with added features.
 <p>
 
@@ -54,7 +58,8 @@ Connections, i.e. sockets with added features.
       socket.<br>
 </div>
 
-<pre><span id="VALconnect"><span class="keyword">val</span> connect</span> : <code class="type">?timeout:float -><br>       ?ping:string -> string -> int -> 'a -> 'a <a href="Procord_connection.html#TYPEt">t</a></code></pre><div class="info">
+
+<pre><span id="VALconnect"><span class="keyword">val</span> connect</span> : <code class="type">?timeout:float -><br>       ?ping:string -> string -> int -> 'a -> 'a <a href="Procord_connection.html#TYPEt">t</a></code></pre><div class="info ">
 Connect to a server using a socket.
 <p>
 
@@ -65,38 +70,40 @@ Connect to a server using a socket.
 <div class="param_info"><code class="code">ping</code> : If the connection has been idle (nothing received)
         for <code class="code">timeout /. 2.</code> seconds, send this message automatically.
         Ignored if <code class="code">timeout</code> is unspecified.</div>
-<pre><span id="VALupdate"><span class="keyword">val</span> update</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> unit</code></pre><div class="info">
+
+<pre><span id="VALupdate"><span class="keyword">val</span> update</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
 Update a connection.
       Send and receive data from and to the internal buffers, send a ping
       message if needed, and close the connection if it is idle.<br>
 </div>
-<br><code><span id="TYPEstate"><span class="keyword">type</span> <code class="type"></code>state</span> = </code><table class="typetable">
+
+<pre><code><span id="TYPEstate"><span class="keyword">type</span> <code class="type"></code>state</span> = </code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">Connecting</span></code></td>
+<code><span id="TYPEELTstate.Connecting"><span class="constructor">Connecting</span></span></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Waiting for the connection to be established.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">Connected</span></code></td>
+<code><span id="TYPEELTstate.Connected"><span class="constructor">Connected</span></span></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Connection successful and still alive.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">Disconnecting</span></code></td>
+<code><span id="TYPEELTstate.Disconnecting"><span class="constructor">Disconnecting</span></span></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Finishing sending, will be disconnected just after.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">Disconnected</span> <span class="keyword">of</span> <code class="type">(Unix.error * string * string) option</code></code></td>
+<code><span id="TYPEELTstate.Disconnected"><span class="constructor">Disconnected</span></span> <span class="keyword">of</span> <code class="type">(Unix.error * string * string) option</code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Connection failed, lost, closed or reset by peer.
           If the error is <code class="code">None</code>, the socket was closed locally.
           The strings are, respectively, the name of the function which
@@ -107,21 +114,24 @@ Update a connection.
           Call <code class="code">receive_buffer_empty</code> to check.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr></table>
 
-<div class="info">
+<div class="info ">
 Possible states of connections.<br>
 </div>
 
-<pre><span id="VALstate"><span class="keyword">val</span> state</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> <a href="Procord_connection.html#TYPEstate">state</a></code></pre><div class="info">
+
+<pre><span id="VALstate"><span class="keyword">val</span> state</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> <a href="Procord_connection.html#TYPEstate">state</a></code></pre><div class="info ">
 Get the state of the connection at the last <code class="code">update</code>.<br>
 </div>
-<pre><span id="VALalive"><span class="keyword">val</span> alive</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> bool</code></pre><div class="info">
+
+<pre><span id="VALalive"><span class="keyword">val</span> alive</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
 Return whether a connection is alive.
 <p>
 
       Return <code class="code">true</code> if <code class="code">state</code> is <code class="code">Connecting</code>, <code class="code">Connected</code> or <code class="code">Disconnecting</code>.
       Return <code class="code">false</code> if <code class="code">state</code> is <code class="code">Disconnected</code>.<br>
 </div>
-<pre><span id="VALsend"><span class="keyword">val</span> send</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> string -> unit</code></pre><div class="info">
+
+<pre><span id="VALsend"><span class="keyword">val</span> send</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> string -> unit</code></pre><div class="info ">
 Send data to a connection.
 <p>
 
@@ -136,7 +146,8 @@ Send data to a connection.
       You may call <code class="code">send</code> after the socket is disconnected, but nothing will
       happen.<br>
 </div>
-<pre><span id="VALreceive"><span class="keyword">val</span> receive</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int -> string option</code></pre><div class="info">
+
+<pre><span id="VALreceive"><span class="keyword">val</span> receive</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int -> string option</code></pre><div class="info ">
 Receive data from a connection.
 <p>
 
@@ -154,7 +165,8 @@ Receive data from a connection.
       Note that there might still be bytes to read even if the socket is
       disconnected.<br>
 </div>
-<pre><span id="VALreceive_poll"><span class="keyword">val</span> receive_poll</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int -> int -> string option</code></pre><div class="info">
+
+<pre><span id="VALreceive_poll"><span class="keyword">val</span> receive_poll</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int -> int -> string option</code></pre><div class="info ">
 Same as <code class="code">receive</code>, but do not remove the data from the buffer.
 <p>
 
@@ -165,7 +177,8 @@ Same as <code class="code">receive</code>, but do not remove the data from the b
       buffer, return <code class="code">length</code> bytes (not more, not less) starting at <code class="code">offset</code>.
       Else, return <code class="code">None</code>.<br>
 </div>
-<pre><span id="VALreceive_poll_part"><span class="keyword">val</span> receive_poll_part</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int -> int -> string</code></pre><div class="info">
+
+<pre><span id="VALreceive_poll_part"><span class="keyword">val</span> receive_poll_part</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int -> int -> string</code></pre><div class="info ">
 Same as <code class="code">receive_poll</code>, but may receive less data than requested.
 <p>
 
@@ -175,7 +188,8 @@ Same as <code class="code">receive_poll</code>, but may receive less data than r
       Return at most <code class="code">length</code> bytes starting at <code class="code">offset</code> in the buffer,
       possibly <code class="code">0</code>.<br>
 </div>
-<pre><span id="VALreceive_all"><span class="keyword">val</span> receive_all</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> string</code></pre><div class="info">
+
+<pre><span id="VALreceive_all"><span class="keyword">val</span> receive_all</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> string</code></pre><div class="info ">
 Same as <code class="code">receive</code>, but receive everything.
 <p>
 
@@ -184,7 +198,8 @@ Same as <code class="code">receive</code>, but receive everything.
 
       Receive everything which is available in the buffer, possibly nothing.<br>
 </div>
-<pre><span id="VALreceive_part"><span class="keyword">val</span> receive_part</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int -> string</code></pre><div class="info">
+
+<pre><span id="VALreceive_part"><span class="keyword">val</span> receive_part</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int -> string</code></pre><div class="info ">
 Same as <code class="code">receive</code>, but may receive less data than requested.
 <p>
 
@@ -194,22 +209,27 @@ Same as <code class="code">receive</code>, but may receive less data than reques
       If at least <code class="code">length</code> bytes are available from the buffer, receive
       <code class="code">length</code> bytes. Else, receive as much bytes as possible, possibly <code class="code">0</code>.<br>
 </div>
-<pre><span id="VALreceive_forget"><span class="keyword">val</span> receive_forget</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int -> unit</code></pre><div class="info">
+
+<pre><span id="VALreceive_forget"><span class="keyword">val</span> receive_forget</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int -> unit</code></pre><div class="info ">
 Same as <code class="code">receive</code>, but do not actually return the received data.
 <p>
 
       This is more efficient if you do not need the data.<br>
 </div>
-<pre><span id="VALreceive_buffer_length"><span class="keyword">val</span> receive_buffer_length</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int</code></pre><div class="info">
+
+<pre><span id="VALreceive_buffer_length"><span class="keyword">val</span> receive_buffer_length</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> int</code></pre><div class="info ">
 Return the length of the receive buffer.<br>
 </div>
-<pre><span id="VALreceive_buffer_empty"><span class="keyword">val</span> receive_buffer_empty</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> bool</code></pre><div class="info">
+
+<pre><span id="VALreceive_buffer_empty"><span class="keyword">val</span> receive_buffer_empty</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
 Return whether the receive buffer is empty.<br>
 </div>
-<pre><span id="VALclose"><span class="keyword">val</span> close</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> unit</code></pre><div class="info">
+
+<pre><span id="VALclose"><span class="keyword">val</span> close</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
 Close a connection if it is not closed already.<br>
 </div>
-<pre><span id="VALclose_nicely"><span class="keyword">val</span> close_nicely</span> : <code class="type">?timeout:float -> 'a <a href="Procord_connection.html#TYPEt">t</a> -> unit</code></pre><div class="info">
+
+<pre><span id="VALclose_nicely"><span class="keyword">val</span> close_nicely</span> : <code class="type">?timeout:float -> 'a <a href="Procord_connection.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
 Same as close, but wait until all data is sent first.
       This is the only way the state can become <code class="code">Disconnecting</code>.<br>
 </div>
@@ -218,23 +238,37 @@ Same as close, but wait until all data is sent first.
 
       As usual, the wait is non-blocking: call <code class="code">update</code> until the socket
       is disconnected.</div>
-<pre><span id="VALdata"><span class="keyword">val</span> data</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> 'a</code></pre><div class="info">
+
+<pre><span id="VALdata"><span class="keyword">val</span> data</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> 'a</code></pre><div class="info ">
 Get the data associated to a connection.<br>
 </div>
+
+<pre><span id="VALtimeout"><span class="keyword">val</span> timeout</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> float option</code></pre><div class="info ">
+Get the <code class="code">timeout</code> argument which was passed to <code class="code">connect</code> or <code class="code">custom</code>.<br>
+</div>
 <br>
-<span id="2_AddressesSocketConnectionsOnly"><h2>Addresses (Socket Connections Only)</h2></span><br>
-<pre><span id="VALremote_address"><span class="keyword">val</span> remote_address</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> Unix.sockaddr</code></pre><div class="info">
+<h2 id="2_SynchronousInterface">Synchronous Interface</h2><br>
+
+<pre><span class="keyword">module</span> <a href="Procord_connection.Sync.html">Sync</a>: <code class="code">sig</code> <a href="Procord_connection.Sync.html">..</a> <code class="code">end</code></pre><div class="info">
+Synchronous interface to procord connections.
+</div>
+<br>
+<h2 id="2_AddressesSocketConnectionsOnly">Addresses (Socket Connections Only)</h2><br>
+
+<pre><span id="VALremote_address"><span class="keyword">val</span> remote_address</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> Unix.sockaddr</code></pre><div class="info ">
 Get the remote address of a connection.<br>
 </div>
-<pre><span id="VALmake_address"><span class="keyword">val</span> make_address</span> : <code class="type">string -> Unix.inet_addr</code></pre><div class="info">
+
+<pre><span id="VALmake_address"><span class="keyword">val</span> make_address</span> : <code class="type">string -> Unix.inet_addr</code></pre><div class="info ">
 Make a socket address from an IPv4, IPv6 or DNS address.<br>
 </div>
 <br>
-<span id="2_ConnectionSets"><h2>Connection Sets</h2></span><br>
+<h2 id="2_ConnectionSets">Connection Sets</h2><br>
 <br>
 This section is useful for servers.<br>
+
 <pre><span id="TYPEset"><span class="keyword">type</span> <code class="type">'a</code> set</span> </pre>
-<div class="info">
+<div class="info ">
 Client connection sets.
 <p>
 
@@ -248,10 +282,12 @@ Client connection sets.
       reflects this fact.<br>
 </div>
 
-<pre><span id="VALempty_set"><span class="keyword">val</span> empty_set</span> : <code class="type">unit -> 'a <a href="Procord_connection.html#TYPEset">set</a></code></pre><div class="info">
+
+<pre><span id="VALempty_set"><span class="keyword">val</span> empty_set</span> : <code class="type">unit -> 'a <a href="Procord_connection.html#TYPEset">set</a></code></pre><div class="info ">
 Create a new empty set of connections.<br>
 </div>
-<pre><span id="VALaccept_into_set"><span class="keyword">val</span> accept_into_set</span> : <code class="type">?timeout:float -><br>       ?ping:string -><br>       Unix.file_descr -><br>       (Unix.sockaddr -> 'a option) -> 'a <a href="Procord_connection.html#TYPEset">set</a> -> unit</code></pre><div class="info">
+
+<pre><span id="VALaccept_into_set"><span class="keyword">val</span> accept_into_set</span> : <code class="type">?timeout:float -><br>       ?ping:string -><br>       Unix.file_descr -><br>       (Unix.sockaddr -> 'a option) -> 'a <a href="Procord_connection.html#TYPEset">set</a> -> unit</code></pre><div class="info ">
 Accept new connections from a socket and add them to a set of
       connections.
 <p>
@@ -271,14 +307,16 @@ Accept new connections from a socket and add them to a set of
 
       May raise <code class="code">Unix_error (EBADF, ...)</code>.<br>
 </div>
-<pre><span id="VALupdate_set"><span class="keyword">val</span> update_set</span> : <code class="type">'a <a href="Procord_connection.html#TYPEset">set</a> -> unit</code></pre><div class="info">
+
+<pre><span id="VALupdate_set"><span class="keyword">val</span> update_set</span> : <code class="type">'a <a href="Procord_connection.html#TYPEset">set</a> -> unit</code></pre><div class="info ">
 Update all connections of a set, and remove closed connections.<br>
 </div>
-<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Procord_connection.html#TYPEset">set</a> -> ('a <a href="Procord_connection.html#TYPEt">t</a> -> unit) -> unit</code></pre><div class="info">
+
+<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">'a <a href="Procord_connection.html#TYPEset">set</a> -> ('a <a href="Procord_connection.html#TYPEt">t</a> -> unit) -> unit</code></pre><div class="info ">
 Iterate on all connections of a connection set.<br>
 </div>
 <br>
-<span id="2_Waiting"><h2>Waiting</h2></span><br>
+<h2 id="2_Waiting">Waiting</h2><br>
 <br>
 Waiting for something to happen using <code class="code">Unix.select</code> can be tricky.
     It is easy to give the wrong set of file descriptors, resulting in
@@ -290,12 +328,14 @@ Waiting for something to happen using <code class="code">Unix.select</code> can 
     First, define a <code class="code">waiter</code>. You may do it once and for all for connections
     using <code class="code">waiter</code>, even for servers using <code class="code">waiter_of_listening_socket</code>
     and <code class="code">waiter_of_set</code>. Then, just call <code class="code">wait</code>.<br>
+
 <pre><span id="TYPEwaiter"><span class="keyword">type</span> <code class="type"></code>waiter</span> </pre>
-<div class="info">
+<div class="info ">
 Waiters for the <code class="code">wait</code> function.<br>
 </div>
 
-<pre><span id="VALwaiter"><span class="keyword">val</span> waiter</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> <a href="Procord_connection.html#TYPEwaiter">waiter</a></code></pre><div class="info">
+
+<pre><span id="VALwaiter"><span class="keyword">val</span> waiter</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">t</a> -> <a href="Procord_connection.html#TYPEwaiter">waiter</a></code></pre><div class="info ">
 Make a waiter from a connection.
 <p>
 
@@ -311,7 +351,8 @@ Make a waiter from a connection.
       In other words, it will wait until it is worth calling <code class="code">update</code> on
       the connection.<br>
 </div>
-<pre><span id="VALwaiter_of_listening_socket"><span class="keyword">val</span> waiter_of_listening_socket</span> : <code class="type">Unix.file_descr -> <a href="Procord_connection.html#TYPEwaiter">waiter</a></code></pre><div class="info">
+
+<pre><span id="VALwaiter_of_listening_socket"><span class="keyword">val</span> waiter_of_listening_socket</span> : <code class="type">Unix.file_descr -> <a href="Procord_connection.html#TYPEwaiter">waiter</a></code></pre><div class="info ">
 Make a waiter from a listening socket.
 <p>
 
@@ -322,7 +363,8 @@ Make a waiter from a listening socket.
       In other words, it will wait until it is worth calling <code class="code">Unix.accept</code>
       on the socket.<br>
 </div>
-<pre><span id="VALwaiter_of_set"><span class="keyword">val</span> waiter_of_set</span> : <code class="type">'a <a href="Procord_connection.html#TYPEset">set</a> -> <a href="Procord_connection.html#TYPEwaiter">waiter</a></code></pre><div class="info">
+
+<pre><span id="VALwaiter_of_set"><span class="keyword">val</span> waiter_of_set</span> : <code class="type">'a <a href="Procord_connection.html#TYPEset">set</a> -> <a href="Procord_connection.html#TYPEwaiter">waiter</a></code></pre><div class="info ">
 Make a waiter from a set of connections.
 <p>
 
@@ -334,7 +376,8 @@ Make a waiter from a set of connections.
       In other words, it will wait until it is worth calling <code class="code">update_set</code>
       on the set of connections.<br>
 </div>
-<pre><span id="VALwaiter_custom"><span class="keyword">val</span> waiter_custom</span> : <code class="type">?read:Unix.file_descr list -><br>       ?write:Unix.file_descr list -><br>       ?except:Unix.file_descr list -> unit -> <a href="Procord_connection.html#TYPEwaiter">waiter</a></code></pre><div class="info">
+
+<pre><span id="VALwaiter_custom"><span class="keyword">val</span> waiter_custom</span> : <code class="type">?read:Unix.file_descr list -><br>       ?write:Unix.file_descr list -><br>       ?except:Unix.file_descr list -> unit -> <a href="Procord_connection.html#TYPEwaiter">waiter</a></code></pre><div class="info ">
 Make a custom waiter from file descriptors.
 <p>
 
@@ -345,32 +388,37 @@ Make a custom waiter from file descriptors.
 </ul>
 <br>
 </div>
-<pre><span id="VALwaiter_of_list"><span class="keyword">val</span> waiter_of_list</span> : <code class="type"><a href="Procord_connection.html#TYPEwaiter">waiter</a> list -> <a href="Procord_connection.html#TYPEwaiter">waiter</a></code></pre><div class="info">
+
+<pre><span id="VALwaiter_of_list"><span class="keyword">val</span> waiter_of_list</span> : <code class="type"><a href="Procord_connection.html#TYPEwaiter">waiter</a> list -> <a href="Procord_connection.html#TYPEwaiter">waiter</a></code></pre><div class="info ">
 Make a waiter from a list of waiters.
 <p>
 
       The waiter will wait until one of the waiters in the list wants to
       stop waiting.<br>
 </div>
-<pre><span id="VALinstanciate_waiter"><span class="keyword">val</span> instanciate_waiter</span> : <code class="type"><a href="Procord_connection.html#TYPEwaiter">waiter</a> -><br>       Unix.file_descr list * Unix.file_descr list * Unix.file_descr list</code></pre><div class="info">
+
+<pre><span id="VALinstanciate_waiter"><span class="keyword">val</span> instanciate_waiter</span> : <code class="type"><a href="Procord_connection.html#TYPEwaiter">waiter</a> -><br>       Unix.file_descr list * Unix.file_descr list * Unix.file_descr list</code></pre><div class="info ">
 Get the file descriptor lists for <code class="code">Unix.select</code> from a waiter.
 <p>
 
       Allows you to call <code class="code">Unix.select</code> yourself.<br>
 </div>
-<pre><span id="VALwait"><span class="keyword">val</span> wait</span> : <code class="type">?timeout:float -> <a href="Procord_connection.html#TYPEwaiter">waiter</a> -> bool</code></pre><div class="info">
+
+<pre><span id="VALwait"><span class="keyword">val</span> wait</span> : <code class="type">?timeout:float -> <a href="Procord_connection.html#TYPEwaiter">waiter</a> -> bool</code></pre><div class="info ">
 Wait until something new happens.<br>
 </div>
 <div class="param_info"><code class="code">timeout</code> : If specified, stop waiting after <code class="code">timeout</code> seconds.
 <p>
 
       Return <code class="code">true</code> if something happened, <code class="code">false</code> in case of timeout.</div>
-<pre><span id="VALwait'"><span class="keyword">val</span> wait'</span> : <code class="type">?timeout:float -> <a href="Procord_connection.html#TYPEwaiter">waiter</a> -> unit</code></pre><div class="info">
+
+<pre><span id="VALwait'"><span class="keyword">val</span> wait'</span> : <code class="type">?timeout:float -> <a href="Procord_connection.html#TYPEwaiter">waiter</a> -> unit</code></pre><div class="info ">
 Same as <code class="code">wait</code> but ignore the result.<br>
 </div>
 <br>
-<span id="2_LowLevelAccess"><h2>Low-Level Access</h2></span><br>
-<pre><span id="VALcustom"><span class="keyword">val</span> custom</span> : <code class="type">?timeout:float -><br>       ?ping:string -><br>       ?input:Unix.file_descr -><br>       ?output:Unix.file_descr -><br>       ?remote_address:Unix.sockaddr -> 'a -> 'a <a href="Procord_connection.html#TYPEt">t</a></code></pre><div class="info">
+<h2 id="2_LowLevelAccess">Low-Level Access</h2><br>
+
+<pre><span id="VALcustom"><span class="keyword">val</span> custom</span> : <code class="type">?timeout:float -><br>       ?ping:string -><br>       ?input:Unix.file_descr -><br>       ?output:Unix.file_descr -><br>       ?remote_address:Unix.sockaddr -> 'a -> 'a <a href="Procord_connection.html#TYPEt">t</a></code></pre><div class="info ">
 Create a connection from custom file descriptors.
 <p>
 

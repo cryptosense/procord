@@ -22,13 +22,15 @@
 <title>Procord_task</title>
 </head>
 <body>
-<div class="navbar"><a href="Procord_rope.html">Previous</a>
-&nbsp;<a href="index.html">Up</a>
-&nbsp;<a href="Procord_worker.html">Next</a>
+<div class="navbar"><a class="pre" href="Procord_rope.html" title="Procord_rope">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Procord_worker.html" title="Procord_worker">Next</a>
 </div>
-<center><h1>Module <a href="type_Procord_task.html">Procord_task</a></h1></center>
-<br>
-<pre><span class="keyword">module</span> Procord_task: <code class="code">sig</code> <a href="Procord_task.html">..</a> <code class="code">end</code></pre>Procord task description.<br>
+<h1>Module <a href="type_Procord_task.html">Procord_task</a></h1>
+
+<pre><span class="keyword">module</span> Procord_task: <code class="code">sig</code> <a href="Procord_task.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Procord task description.<br>
+</div>
 <hr width="100%">
 <br>
 To use Procord, you must first describe a task.
@@ -41,13 +43,15 @@ Default serializing functions use the <code class="code">Marshal</code> module o
     library. It should only be used for quick prototyping or if you really
     know what you are doing.<br>
 <br>
-<span id="2_TasksFromtheWorkerPointofView"><h2>Tasks, From the Worker Point of View</h2></span><br>
+<h2 id="2_TasksFromtheWorkerPointofView">Tasks, From the Worker Point of View</h2><br>
+
 <pre><span id="TYPEworker_task"><span class="keyword">type</span> <code class="type">('a, 'b)</code> worker_task</span> </pre>
-<div class="info">
+<div class="info ">
 Worker tasks contain the information needed by the worker process.<br>
 </div>
 
-<pre><span id="VALmake_worker_task"><span class="keyword">val</span> make_worker_task</span> : <code class="type">?read_input:(string -> 'a) -><br>       ?write_output:('b -> string) -><br>       ?write_exception:(exn -> string) -><br>       string -> ('a -> 'b) -> ('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a></code></pre><div class="info">
+
+<pre><span id="VALmake_worker_task"><span class="keyword">val</span> make_worker_task</span> : <code class="type">?read_input:(string -> 'a) -><br>       ?write_output:('b -> string) -><br>       ?write_exception:(exn -> string) -><br>       string -> ('a -> 'b) -> ('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a></code></pre><div class="info ">
 Make a <code class="code">worker_task</code>.
 <p>
 
@@ -79,25 +83,31 @@ Make a <code class="code">worker_task</code>.
 
       If <code class="code">write_exception</code> raises an exception, it will be serialized as a
       <code class="code">Worker_unknown_exception</code> using <code class="code">Printexc</code>.</div>
-<pre><span id="VALread_input"><span class="keyword">val</span> read_input</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> -> string -> 'a</code></pre><div class="info">
+
+<pre><span id="VALread_input"><span class="keyword">val</span> read_input</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> -> string -> 'a</code></pre><div class="info ">
 Get the input deserialization function of a worker task.<br>
 </div>
-<pre><span id="VALwrite_output"><span class="keyword">val</span> write_output</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> -> 'b -> string</code></pre><div class="info">
+
+<pre><span id="VALwrite_output"><span class="keyword">val</span> write_output</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> -> 'b -> string</code></pre><div class="info ">
 Get the output serialization function of a worker task.<br>
 </div>
-<pre><span id="VALwrite_exception"><span class="keyword">val</span> write_exception</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> -> exn -> string</code></pre><div class="info">
+
+<pre><span id="VALwrite_exception"><span class="keyword">val</span> write_exception</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> -> exn -> string</code></pre><div class="info ">
 Get the exception serialization function of a worker task.<br>
 </div>
-<pre><span id="VALrun"><span class="keyword">val</span> run</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> -> 'a -> 'b</code></pre><div class="info">
+
+<pre><span id="VALrun"><span class="keyword">val</span> run</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> -> 'a -> 'b</code></pre><div class="info ">
 Get the function that a worker task runs.<br>
 </div>
-<pre><span id="VALworker_task_name"><span class="keyword">val</span> worker_task_name</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> -> string</code></pre><div class="info">
+
+<pre><span id="VALworker_task_name"><span class="keyword">val</span> worker_task_name</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> -> string</code></pre><div class="info ">
 Get the name of a worker task.<br>
 </div>
 <br>
-<span id="2_TasksFromtheMainProgramPointofView"><h2>Tasks, From the Main Program Point of View</h2></span><br>
+<h2 id="2_TasksFromtheMainProgramPointofView">Tasks, From the Main Program Point of View</h2><br>
+
 <pre><span id="TYPEdelegated_task"><span class="keyword">type</span> <code class="type">('a, 'b)</code> delegated_task</span> </pre>
-<div class="info">
+<div class="info ">
 Delegated tasks contain the information needed by the main program.
 <p>
 
@@ -105,7 +115,8 @@ Delegated tasks contain the information needed by the main program.
       <code class="code">'b</code> is the type of output values.<br>
 </div>
 
-<pre><span id="VALmake_delegated_task"><span class="keyword">val</span> make_delegated_task</span> : <code class="type">?write_input:('a -> string) -><br>       ?read_output:(string -> 'b) -><br>       ?read_exception:(string -> exn) -><br>       string -> ('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a></code></pre><div class="info">
+
+<pre><span id="VALmake_delegated_task"><span class="keyword">val</span> make_delegated_task</span> : <code class="type">?write_input:('a -> string) -><br>       ?read_output:(string -> 'b) -><br>       ?read_exception:(string -> exn) -><br>       string -> ('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a></code></pre><div class="info ">
 Make a <code class="code">delegated_task</code>.
 <p>
 
@@ -131,21 +142,26 @@ Make a <code class="code">delegated_task</code>.
       in a <code class="code">Worker_connection_failed</code> error. If <code class="code">read_exception</code> is unspecified
       or raises an exception, it will result in a <code class="code">Worker_unknown_exception</code>
       error.</div>
-<pre><span id="VALwrite_input"><span class="keyword">val</span> write_input</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a> -> 'a -> string</code></pre><div class="info">
+
+<pre><span id="VALwrite_input"><span class="keyword">val</span> write_input</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a> -> 'a -> string</code></pre><div class="info ">
 Get the input serialization function of a delegated task.<br>
 </div>
-<pre><span id="VALread_output"><span class="keyword">val</span> read_output</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a> -> string -> 'b</code></pre><div class="info">
+
+<pre><span id="VALread_output"><span class="keyword">val</span> read_output</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a> -> string -> 'b</code></pre><div class="info ">
 Get the output deserialization function of a delegated task.<br>
 </div>
-<pre><span id="VALread_exception"><span class="keyword">val</span> read_exception</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a> -> (string -> exn) option</code></pre><div class="info">
+
+<pre><span id="VALread_exception"><span class="keyword">val</span> read_exception</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a> -> (string -> exn) option</code></pre><div class="info ">
 Get the exception deserialization function of a delegated task, if any.<br>
 </div>
-<pre><span id="VALdelegated_task_name"><span class="keyword">val</span> delegated_task_name</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a> -> string</code></pre><div class="info">
+
+<pre><span id="VALdelegated_task_name"><span class="keyword">val</span> delegated_task_name</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a> -> string</code></pre><div class="info ">
 Get the name of a delegated task.<br>
 </div>
 <br>
-<span id="2_TasksFromBothPointsofView"><h2>Tasks, From Both Points of View</h2></span><br>
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">?read_input:(string -> 'a) -><br>       ?write_input:('a -> string) -><br>       ?read_output:(string -> 'b) -><br>       ?write_output:('b -> string) -><br>       ?read_exception:(string -> exn) -><br>       ?write_exception:(exn -> string) -><br>       string -><br>       ('a -> 'b) -><br>       ('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> * ('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a></code></pre><div class="info">
+<h2 id="2_TasksFromBothPointsofView">Tasks, From Both Points of View</h2><br>
+
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">?read_input:(string -> 'a) -><br>       ?write_input:('a -> string) -><br>       ?read_output:(string -> 'b) -><br>       ?write_output:('b -> string) -><br>       ?read_exception:(string -> exn) -><br>       ?write_exception:(exn -> string) -><br>       string -><br>       ('a -> 'b) -><br>       ('a, 'b) <a href="Procord_task.html#TYPEworker_task">worker_task</a> * ('a, 'b) <a href="Procord_task.html#TYPEdelegated_task">delegated_task</a></code></pre><div class="info ">
 Make a <code class="code">worker_task</code> and a <code class="code">delegated_task</code>.
 <p>
 

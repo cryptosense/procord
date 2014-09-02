@@ -21,9 +21,15 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">E_ill_formed_message</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">E_message_too_long</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">E_disconnected</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">E_invalid_print_destination</span><br>
 &nbsp;&nbsp;<span class="keyword">exception</span>&nbsp;<span class="constructor">Error</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Procord_protocol</span>.error<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;error&nbsp;:&nbsp;<span class="constructor">Procord_protocol</span>.error&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;error_message&nbsp;:&nbsp;<span class="constructor">Procord_protocol</span>.error&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;custom_destination&nbsp;=&nbsp;char<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;print_destination&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">D_stdout</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">D_stderr</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">D_custom</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Procord_protocol</span>.custom_destination<br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;message&nbsp;=<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">M_none</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_value</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
@@ -31,6 +37,8 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_exception</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_unknown_exception</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_error</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Procord_protocol</span>.error<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_print</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Procord_protocol</span>.print_destination&nbsp;*&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">M_flush</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Procord_protocol</span>.print_destination<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_max_message_size&nbsp;:&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_protocol</span>.message&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_value&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
@@ -38,8 +46,17 @@
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_exception&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_unknown_exception&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_error&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_protocol</span>.error&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_print&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Procord_protocol</span>.print_destination&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send_flush&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_protocol</span>.print_destination&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_protocol</span>.message<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;blocking_receive&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_protocol</span>.message<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;blocking_receive_task_name&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;blocking_receive_value&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;register_destination&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Procord_protocol</span>.custom_destination&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Format</span>.formatter&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;formatter_of_destination&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Procord_protocol</span>.print_destination&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Format</span>.formatter&nbsp;option<br>
 <span class="keyword">end</span></code></body></html>

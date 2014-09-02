@@ -39,6 +39,16 @@
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;close&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;close_nicely&nbsp;:&nbsp;?timeout:float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;data&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;timeout&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Sync</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;connect&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?timeout:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?ping:string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;close_nicely&nbsp;:&nbsp;?timeout:float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;send&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;receive&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;remote_address&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Procord_connection</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Unix</span>.sockaddr<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;make_address&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Unix</span>.inet_addr<br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;set<br>

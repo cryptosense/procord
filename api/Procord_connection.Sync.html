@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="Up" href="Procord_connection.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Procord_connection" rel="Chapter" href="Procord_connection.html">
+<link title="Procord_process" rel="Chapter" href="Procord_process.html">
+<link title="Procord_protocol" rel="Chapter" href="Procord_protocol.html">
+<link title="Procord_rope" rel="Chapter" href="Procord_rope.html">
+<link title="Procord_task" rel="Chapter" href="Procord_task.html">
+<link title="Procord_worker" rel="Chapter" href="Procord_worker.html"><title>Procord_connection.Sync</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="Procord_connection.html" title="Procord_connection">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Procord_connection.Sync.html">Procord_connection.Sync</a></h1>
+
+<pre><span class="keyword">module</span> Sync: <code class="code">sig</code> <a href="Procord_connection.Sync.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Synchronous interface to procord connections.<br>
+</div>
+<hr width="100%">
+<br>
+Synchronous interface to procord connections.<br>
+<br>
+These functions can be mixed with the asynchronous ones.
+      They wait until either their condition is met or until <code class="code">state</code>
+      returns <code class="code">Disconnected</code>.<br>
+
+<pre><span id="VALconnect"><span class="keyword">val</span> connect</span> : <code class="type">?timeout:float -><br>       ?ping:string -> string -> int -> 'a -> 'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a></code></pre><div class="info ">
+Same as <code class="code">connect</code>, but wait until the connection is established.<br>
+</div>
+
+<pre><span id="VALclose_nicely"><span class="keyword">val</span> close_nicely</span> : <code class="type">?timeout:float -> 'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> unit</code></pre><div class="info ">
+Same as <code class="code">close_nicely</code>, but wait until the connection is closed.<br>
+</div>
+
+<pre><span id="VALsend"><span class="keyword">val</span> send</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string -> unit</code></pre><div class="info ">
+Same as <code class="code">send</code>, but wait until the sending buffer is empty.<br>
+</div>
+
+<pre><span id="VALreceive"><span class="keyword">val</span> receive</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> int -> string option</code></pre><div class="info ">
+Same as <code class="code">receive</code>, but wait until the data is available.<br>
+</div>
+</body></html>

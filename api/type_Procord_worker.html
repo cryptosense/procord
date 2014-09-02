@@ -33,6 +33,8 @@
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_max_simultaneous_tasks&nbsp;:&nbsp;int&nbsp;option&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_reuse_address&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_reuse_address&nbsp;:&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_dont_fork&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_dont_fork&nbsp;:&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;run_custom&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;?input:<span class="constructor">Unix</span>.file_descr&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;?output:<span class="constructor">Unix</span>.file_descr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_worker</span>.task&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
@@ -41,5 +43,11 @@
 &nbsp;&nbsp;&nbsp;&nbsp;?accept:(<span class="constructor">Unix</span>.sockaddr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool)&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;?max_simultaneous_tasks:int&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;?reuse_address:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?dont_fork:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;hostname:string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;port:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_worker</span>.task&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;redirect_standard_formatters&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;redirect_formatter&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Format</span>.formatter&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Procord_protocol</span>.print_destination&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;make_redirected_formatter&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Procord_protocol</span>.print_destination&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Format</span>.formatter<br>
 <span class="keyword">end</span></code></body></html>

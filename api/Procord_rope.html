@@ -19,34 +19,42 @@
 <link title="Procord_worker" rel="Chapter" href="Procord_worker.html"><title>Procord_rope</title>
 </head>
 <body>
-<div class="navbar"><a href="Procord_protocol.html">Previous</a>
-&nbsp;<a href="index.html">Up</a>
-&nbsp;<a href="Procord_task.html">Next</a>
+<div class="navbar"><a class="pre" href="Procord_protocol.html" title="Procord_protocol">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Procord_task.html" title="Procord_task">Next</a>
 </div>
-<center><h1>Module <a href="type_Procord_rope.html">Procord_rope</a></h1></center>
-<br>
-<pre><span class="keyword">module</span> Procord_rope: <code class="code">sig</code> <a href="Procord_rope.html">..</a> <code class="code">end</code></pre>Strings represented by multiple actual strings.<br>
+<h1>Module <a href="type_Procord_rope.html">Procord_rope</a></h1>
+
+<pre><span class="keyword">module</span> Procord_rope: <code class="code">sig</code> <a href="Procord_rope.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Strings represented by multiple actual strings.<br>
+</div>
 <hr width="100%">
+
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
-<div class="info">
+<div class="info ">
 Strings of strings.<br>
 </div>
 
-<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a></code></pre><div class="info">
+
+<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a></code></pre><div class="info ">
 The empty rope.<br>
 </div>
-<pre><span id="VALis_empty"><span class="keyword">val</span> is_empty</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> bool</code></pre><div class="info">
+
+<pre><span id="VALis_empty"><span class="keyword">val</span> is_empty</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
 Test whether a rope is empty.
       Equivalent to testing whether the length is <code class="code">0</code>.<br>
 </div>
-<pre><span id="VALof_string"><span class="keyword">val</span> of_string</span> : <code class="type">string -> <a href="Procord_rope.html#TYPEt">t</a></code></pre><div class="info">
+
+<pre><span id="VALof_string"><span class="keyword">val</span> of_string</span> : <code class="type">string -> <a href="Procord_rope.html#TYPEt">t</a></code></pre><div class="info ">
 Make a rope from a string.<br>
 </div>
-<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> string</code></pre><div class="info">
+
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> string</code></pre><div class="info ">
 Convert a rope back into a string.
       You should avoid doing this as much as possible.<br>
 </div>
-<pre><span id="VALiter_string_pieces"><span class="keyword">val</span> iter_string_pieces</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> (string -> int -> int -> unit) -> unit</code></pre><div class="info">
+
+<pre><span id="VALiter_string_pieces"><span class="keyword">val</span> iter_string_pieces</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> (string -> int -> int -> unit) -> unit</code></pre><div class="info ">
 Iterate on the string pieces of a rope.
 <p>
 
@@ -56,13 +64,15 @@ Iterate on the string pieces of a rope.
       Function <code class="code">f</code> is called as <code class="code">f string offset length</code> for each
       piece of the rope, left-to-right.<br>
 </div>
-<pre><span id="VALconcat"><span class="keyword">val</span> concat</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> <a href="Procord_rope.html#TYPEt">t</a> -> <a href="Procord_rope.html#TYPEt">t</a></code></pre><div class="info">
+
+<pre><span id="VALconcat"><span class="keyword">val</span> concat</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> <a href="Procord_rope.html#TYPEt">t</a> -> <a href="Procord_rope.html#TYPEt">t</a></code></pre><div class="info ">
 Rope concatenation.
 <p>
 
       Complexity: O(1).<br>
 </div>
-<pre><span id="VALsub"><span class="keyword">val</span> sub</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> int -> int -> <a href="Procord_rope.html#TYPEt">t</a></code></pre><div class="info">
+
+<pre><span id="VALsub"><span class="keyword">val</span> sub</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> int -> int -> <a href="Procord_rope.html#TYPEt">t</a></code></pre><div class="info ">
 Make a rope from a part of another rope.
 <p>
 
@@ -76,7 +86,8 @@ Make a rope from a part of another rope.
       Complexity: O(n) where n is the size of the tree (not the length of the
       rope, there is no string copying involved).<br>
 </div>
-<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> int</code></pre><div class="info">
+
+<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Procord_rope.html#TYPEt">t</a> -> int</code></pre><div class="info ">
 Return the length, in bytes, of a rope.
 <p>
 

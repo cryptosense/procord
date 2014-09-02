@@ -20,122 +20,198 @@
 <link title="Messages" rel="Section" href="#2_Messages">
 <link title="Non-Blocking Functions" rel="Section" href="#2_NonBlockingFunctions">
 <link title="Blocking Functions" rel="Section" href="#2_BlockingFunctions">
+<link title="Formatters and Destinations" rel="Section" href="#2_FormattersandDestinations">
 <link title="Protocol Description" rel="Section" href="#2_ProtocolDescription">
 <title>Procord_protocol</title>
 </head>
 <body>
-<div class="navbar"><a href="Procord_process.html">Previous</a>
-&nbsp;<a href="index.html">Up</a>
-&nbsp;<a href="Procord_rope.html">Next</a>
+<div class="navbar"><a class="pre" href="Procord_process.html" title="Procord_process">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Procord_rope.html" title="Procord_rope">Next</a>
 </div>
-<center><h1>Module <a href="type_Procord_protocol.html">Procord_protocol</a></h1></center>
-<br>
-<pre><span class="keyword">module</span> Procord_protocol: <code class="code">sig</code> <a href="Procord_protocol.html">..</a> <code class="code">end</code></pre>Communication protocol between workers and main programs.<br>
+<h1>Module <a href="type_Procord_protocol.html">Procord_protocol</a></h1>
+
+<pre><span class="keyword">module</span> Procord_protocol: <code class="code">sig</code> <a href="Procord_protocol.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Communication protocol between workers and main programs.<br>
+</div>
 <hr width="100%">
 <br>
-<span id="2_Errors"><h2>Errors</h2></span><br>
-<br><code><span id="TYPEerror"><span class="keyword">type</span> <code class="type"></code>error</span> = </code><table class="typetable">
+<h2 id="2_Errors">Errors</h2><br>
+
+<pre><code><span id="TYPEerror"><span class="keyword">type</span> <code class="type"></code>error</span> = </code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">E_task_not_supported</span></code></td>
+<code><span id="TYPEELTerror.E_task_not_supported"><span class="constructor">E_task_not_supported</span></span></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">E_unexpected_message</span></code></td>
+<code><span id="TYPEELTerror.E_unexpected_message"><span class="constructor">E_unexpected_message</span></span></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">E_ill_formed_message</span></code></td>
+<code><span id="TYPEELTerror.E_ill_formed_message"><span class="constructor">E_ill_formed_message</span></span></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">E_message_too_long</span></code></td>
+<code><span id="TYPEELTerror.E_message_too_long"><span class="constructor">E_message_too_long</span></span></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">E_disconnected</span></code></td>
+<code><span id="TYPEELTerror.E_disconnected"><span class="constructor">E_disconnected</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTerror.E_invalid_print_destination"><span class="constructor">E_invalid_print_destination</span></span></code></td>
 
 </tr></table>
 
-<div class="info">
+<div class="info ">
 Errors from workers and protocol errors.<br>
 </div>
 
+
 <pre><span id="EXCEPTIONError"><span class="keyword">exception</span> Error</span> <span class="keyword">of</span> <code class="type"><a href="Procord_protocol.html#TYPEerror">error</a></code></pre>
-<div class="info">
+<div class="info ">
 An error has occurred.<br>
 </div>
-<pre><span id="VALerror"><span class="keyword">val</span> error</span> : <code class="type"><a href="Procord_protocol.html#TYPEerror">error</a> -> 'a</code></pre><div class="info">
+
+<pre><span id="VALerror"><span class="keyword">val</span> error</span> : <code class="type"><a href="Procord_protocol.html#TYPEerror">error</a> -> 'a</code></pre><div class="info ">
 Raise an error.<br>
 </div>
-<pre><span id="VALerror_message"><span class="keyword">val</span> error_message</span> : <code class="type"><a href="Procord_protocol.html#TYPEerror">error</a> -> string</code></pre><div class="info">
+
+<pre><span id="VALerror_message"><span class="keyword">val</span> error_message</span> : <code class="type"><a href="Procord_protocol.html#TYPEerror">error</a> -> string</code></pre><div class="info ">
 Return a string explaining an error in English.<br>
 </div>
 <br>
-<span id="2_Messages"><h2>Messages</h2></span><br>
-<br><code><span id="TYPEmessage"><span class="keyword">type</span> <code class="type"></code>message</span> = </code><table class="typetable">
+<h2 id="2_Messages">Messages</h2><br>
+
+<pre><span id="TYPEcustom_destination"><span class="keyword">type</span> <code class="type"></code>custom_destination</span> = <code class="type">char</code> </pre>
+<div class="info ">
+Custom destination identifiers.
+<p>
+
+    Custom destinations are identified by a single character which should
+    not be <code class="code">'O'</code> nor <code class="code">'E'</code>. You can typically use <code class="code">'0'</code>, <code class="code">'1'</code>, ..., <code class="code">'9'</code>.<br>
+</div>
+
+
+<pre><code><span id="TYPEprint_destination"><span class="keyword">type</span> <code class="type"></code>print_destination</span> = </code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">M_none</span></code></td>
+<code><span id="TYPEELTprint_destination.D_stdout"><span class="constructor">D_stdout</span></span></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">M_value</span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+<code><span id="TYPEELTprint_destination.D_stderr"><span class="constructor">D_stderr</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTprint_destination.D_custom"><span class="constructor">D_custom</span></span> <span class="keyword">of</span> <code class="type"><a href="Procord_protocol.html#TYPEcustom_destination">custom_destination</a></code></code></td>
+
+</tr></table>
+
+<div class="info ">
+Possible destinations when sending messages to print.
+<p>
+
+    Possible values are:<ul>
+<li><code class="code">D_stdout</code>: print to <code class="code">Format.std_formatter</code>;</li>
+<li><code class="code">D_stderr</code>: print to <code class="code">Format.err_formatter</code>;</li>
+<li><code class="code">D_custom</code>: print to a custom destination.</li>
+</ul>
+<br>
+</div>
+
+
+<pre><code><span id="TYPEmessage"><span class="keyword">type</span> <code class="type"></code>message</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTmessage.M_none"><span class="constructor">M_none</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTmessage.M_value"><span class="constructor">M_value</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Serialized input or output.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">M_task_name</span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+<code><span id="TYPEELTmessage.M_task_name"><span class="constructor">M_task_name</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
 
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">M_exception</span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+<code><span id="TYPEELTmessage.M_exception"><span class="constructor">M_exception</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Serialized exception.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">M_unknown_exception</span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+<code><span id="TYPEELTmessage.M_unknown_exception"><span class="constructor">M_unknown_exception</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Exception as a string using <code class="code">Printexc</code>.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
 <tr>
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span class="constructor">M_error</span> <span class="keyword">of</span> <code class="type"><a href="Procord_protocol.html#TYPEerror">error</a></code></code></td>
+<code><span id="TYPEELTmessage.M_error"><span class="constructor">M_error</span></span> <span class="keyword">of</span> <code class="type"><a href="Procord_protocol.html#TYPEerror">error</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTmessage.M_print"><span class="constructor">M_print</span></span> <span class="keyword">of</span> <code class="type"><a href="Procord_protocol.html#TYPEprint_destination">print_destination</a> * string</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Destination, message to print.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTmessage.M_flush"><span class="constructor">M_flush</span></span> <span class="keyword">of</span> <code class="type"><a href="Procord_protocol.html#TYPEprint_destination">print_destination</a></code></code></td>
 
 </tr></table>
 
-<div class="info">
+<div class="info ">
 Messages that can be received.<br>
 </div>
 
-<pre><span id="VALset_max_message_size"><span class="keyword">val</span> set_max_message_size</span> : <code class="type">int -> unit</code></pre><div class="info">
+
+<pre><span id="VALset_max_message_size"><span class="keyword">val</span> set_max_message_size</span> : <code class="type">int -> unit</code></pre><div class="info ">
 Set the maximum size of packets.
 <p>
 
@@ -149,53 +225,107 @@ Set the maximum size of packets.
       By default the maximum size is <code class="code">max_int</code>.<br>
 </div>
 <br>
-<span id="2_NonBlockingFunctions"><h2>Non-Blocking Functions</h2></span><br>
-<pre><span id="VALsend"><span class="keyword">val</span> send</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> <a href="Procord_protocol.html#TYPEmessage">message</a> -> unit</code></pre><div class="info">
+<h2 id="2_NonBlockingFunctions">Non-Blocking Functions</h2><br>
+
+<pre><span id="VALsend"><span class="keyword">val</span> send</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> <a href="Procord_protocol.html#TYPEmessage">message</a> -> unit</code></pre><div class="info ">
 Send a message.<br>
 </div>
-<pre><span id="VALsend_value"><span class="keyword">val</span> send_value</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string -> unit</code></pre><div class="info">
+
+<pre><span id="VALsend_value"><span class="keyword">val</span> send_value</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string -> unit</code></pre><div class="info ">
 Send a value (input or output).<br>
 </div>
-<pre><span id="VALsend_task_name"><span class="keyword">val</span> send_task_name</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string -> unit</code></pre><div class="info">
+
+<pre><span id="VALsend_task_name"><span class="keyword">val</span> send_task_name</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string -> unit</code></pre><div class="info ">
 Send the name of the task to execute.<br>
 </div>
-<pre><span id="VALsend_exception"><span class="keyword">val</span> send_exception</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string -> unit</code></pre><div class="info">
+
+<pre><span id="VALsend_exception"><span class="keyword">val</span> send_exception</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string -> unit</code></pre><div class="info ">
 Send an exception message.<br>
 </div>
-<pre><span id="VALsend_unknown_exception"><span class="keyword">val</span> send_unknown_exception</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string -> unit</code></pre><div class="info">
+
+<pre><span id="VALsend_unknown_exception"><span class="keyword">val</span> send_unknown_exception</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string -> unit</code></pre><div class="info ">
 Send an unknown exception message.<br>
 </div>
-<pre><span id="VALsend_error"><span class="keyword">val</span> send_error</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> <a href="Procord_protocol.html#TYPEerror">error</a> -> unit</code></pre><div class="info">
+
+<pre><span id="VALsend_error"><span class="keyword">val</span> send_error</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> <a href="Procord_protocol.html#TYPEerror">error</a> -> unit</code></pre><div class="info ">
 Send an error message.<br>
 </div>
-<pre><span id="VALreceive"><span class="keyword">val</span> receive</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> <a href="Procord_protocol.html#TYPEmessage">message</a></code></pre><div class="info">
+
+<pre><span id="VALsend_print"><span class="keyword">val</span> send_print</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -><br>       <a href="Procord_protocol.html#TYPEprint_destination">print_destination</a> -> string -> unit</code></pre><div class="info ">
+Send a message to be printed using <code class="code">Format.fprintf</code>.
+<p>
+
+      The worker can use this to make the main program call
+      <code class="code">Format.fprintf</code>. It is unspecified whether the main program can
+      send messages like this to the worker.<br>
+</div>
+
+<pre><span id="VALsend_flush"><span class="keyword">val</span> send_flush</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> <a href="Procord_protocol.html#TYPEprint_destination">print_destination</a> -> unit</code></pre><div class="info ">
+Send a flush request.
+<p>
+
+      The worker can use this to make the main program call
+      <code class="code">Format.pp_print_flush</code>. It is unspecified whether the main
+      program can send messages like this to the worker.<br>
+</div>
+
+<pre><span id="VALreceive"><span class="keyword">val</span> receive</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> <a href="Procord_protocol.html#TYPEmessage">message</a></code></pre><div class="info ">
 Try to receive a message from a connection.
 <p>
 
-      May raise <code class="code">Error E_ill_formed_message</code>.<br>
+    May raise <code class="code">Error E_ill_formed_message</code>.<br>
 </div>
 <br>
-<span id="2_BlockingFunctions"><h2>Blocking Functions</h2></span><br>
-<pre><span id="VALblocking_receive"><span class="keyword">val</span> blocking_receive</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> <a href="Procord_protocol.html#TYPEmessage">message</a></code></pre><div class="info">
+<h2 id="2_BlockingFunctions">Blocking Functions</h2><br>
+
+<pre><span id="VALblocking_receive"><span class="keyword">val</span> blocking_receive</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> <a href="Procord_protocol.html#TYPEmessage">message</a></code></pre><div class="info ">
 Receive a message.
 <p>
 
       May raise <code class="code">Error</code>.<br>
 </div>
-<pre><span id="VALblocking_receive_task_name"><span class="keyword">val</span> blocking_receive_task_name</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string</code></pre><div class="info">
+
+<pre><span id="VALblocking_receive_task_name"><span class="keyword">val</span> blocking_receive_task_name</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string</code></pre><div class="info ">
 Receive a task name.
 <p>
 
       May raise <code class="code">Error</code>.<br>
 </div>
-<pre><span id="VALblocking_receive_value"><span class="keyword">val</span> blocking_receive_value</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string</code></pre><div class="info">
+
+<pre><span id="VALblocking_receive_value"><span class="keyword">val</span> blocking_receive_value</span> : <code class="type">'a <a href="Procord_connection.html#TYPEt">Procord_connection.t</a> -> string</code></pre><div class="info ">
 Receive a serialized value.
 <p>
 
       May raise <code class="code">Error</code>.<br>
 </div>
 <br>
-<span id="2_ProtocolDescription"><h2>Protocol Description</h2></span><br>
+<h2 id="2_FormattersandDestinations">Formatters and Destinations</h2><br>
+
+<pre><span id="VALregister_destination"><span class="keyword">val</span> register_destination</span> : <code class="type"><a href="Procord_protocol.html#TYPEcustom_destination">custom_destination</a> -> Format.formatter -> unit</code></pre><div class="info ">
+Register a formatter as a custom destination.
+      If the worker sends to this destination, the main program will
+      print on this formatter. To send to this destination, the worker
+      can use <code class="code">Procord_worker.make_redirected_formatter</code>.
+<p>
+
+      Multiples destinations are not supported: only the last formatter
+      receives the message.
+<p>
+
+      This can be called before <code class="code">Procord_worker.run</code>, although it only
+      affects the main program. From the worker, you should use
+      <code class="code">Procord_worker.redirect_formatter</code> or
+      <code class="code">Procord_worker.formatter_of_destination</code>.<br>
+</div>
+
+<pre><span id="VALformatter_of_destination"><span class="keyword">val</span> formatter_of_destination</span> : <code class="type"><a href="Procord_protocol.html#TYPEprint_destination">print_destination</a> -> Format.formatter option</code></pre><div class="info ">
+Return the formatter corresponding to a destination.
+<p>
+
+      Return <code class="code">None</code> if the destination custom and unregistered.<br>
+</div>
+<br>
+<h2 id="2_ProtocolDescription">Protocol Description</h2><br>
 <br>
 A sequence of messages is sent on the connection. (See type <code class="code">message</code>.)
     Nothing else can be sent, and <code class="code">M_none</code> cannot really be sent either.
@@ -243,19 +373,43 @@ A sequence of messages is sent on the connection. (See type <code class="code">m
         <code class="code">"1"</code> - <code class="code">E_unexpected_message</code>;
         <code class="code">"2"</code> - <code class="code">E_ill_formed_message</code>;
         <code class="code">"3"</code> - <code class="code">E_message_too_long</code>;
-        <code class="code">"4"</code> - <code class="code">E_disconnected</code>.</li>
+        <code class="code">"4"</code> - <code class="code">E_disconnected</code>;
+        <code class="code">"5"</code> - <code class="code">E_invalid_print_destination</code>.</li>
+</ul>
+<ul>
+<li><code class="code">M_print</code>:
+      KIND <code class="code">'P'</code>;
+      BODY starts with the destination, which is one of those
+      (quotes not included):
+        <code class="code">"O"</code> - <code class="code">`stdout</code>;
+        <code class="code">"E"</code> - <code class="code">`stderr</code>;
+        any other character - custom destination.
+      BODY continues with the message to be printed.</li>
+</ul>
+<ul>
+<li><code class="code">M_flush</code>:
+      KIND <code class="code">'F'</code>;
+      BODY is one of those (quotes not included):
+        <code class="code">"O"</code> - <code class="code">`stdout</code>;
+        <code class="code">"E"</code> - <code class="code">`stderr</code>;
+        any other character - custom destination.</li>
 </ul>
 
     Examples:
 <p>
 <ul>
-<li><code class="code">"1E2"</code> has SIZE 1, KIND <code class="code">'E'</code> (M_error),
+<li><code class="code">"1E2"</code> has SIZE 1, KIND <code class="code">'E'</code> (<code class="code">M_error</code>),
       and BODY <code class="code">"2"</code> (<code class="code">E_disconnected</code>).</li>
 </ul>
 <ul>
-<li><code class="code">"5Thelloworld"</code> has SIZE 5, KIND <code class="code">'T'</code> (M_task_name),
+<li><code class="code">"5Thelloworld"</code> has SIZE 5, KIND <code class="code">'T'</code> (<code class="code">M_task_name</code>),
       and BODY <code class="code">"hello"</code>.
       Remainder <code class="code">"world"</code> is not part of the message.</li>
+</ul>
+<ul>
+<li><code class="code">"8POmessage"</code> has SIZE 8, KIND <code class="code">'P'</code> (<code class="code">M_print</code>),
+      and BODY <code class="code">"Omessage"</code>.
+      It is a request to print <code class="code">"message"</code> on <code class="code">Format.std_formatter</code>.</li>
 </ul>
 <br>
 </body></html>

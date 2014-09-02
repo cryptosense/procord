@@ -15,7 +15,9 @@
 <link title="Procord_worker" rel="Chapter" href="Procord_worker.html"><title>Index of values</title>
 </head>
 <body>
-<center><h1>Index of values</h1></center>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Index of values</h1>
 <table>
 <tr><td align="left"><br>A</td></tr>
 <tr><td><a href="Procord_connection.html#VALaccept_into_set">accept_into_set</a> [<a href="Procord_connection.html">Procord_connection</a>]</td>
@@ -51,6 +53,11 @@ Receive a serialized value.
 Close a connection if it is not closed already.
 </div>
 </td></tr>
+<tr><td><a href="Procord_connection.Sync.html#VALclose_nicely">close_nicely</a> [<a href="Procord_connection.Sync.html">Procord_connection.Sync</a>]</td>
+<td><div class="info">
+Same as <code class="code">close_nicely</code>, but wait until the connection is closed.
+</div>
+</td></tr>
 <tr><td><a href="Procord_connection.html#VALclose_nicely">close_nicely</a> [<a href="Procord_connection.html">Procord_connection</a>]</td>
 <td><div class="info">
 Same as close, but wait until all data is sent first.
@@ -59,6 +66,11 @@ Same as close, but wait until all data is sent first.
 <tr><td><a href="Procord_rope.html#VALconcat">concat</a> [<a href="Procord_rope.html">Procord_rope</a>]</td>
 <td><div class="info">
 Rope concatenation.
+</div>
+</td></tr>
+<tr><td><a href="Procord_connection.Sync.html#VALconnect">connect</a> [<a href="Procord_connection.Sync.html">Procord_connection.Sync</a>]</td>
+<td><div class="info">
+Same as <code class="code">connect</code>, but wait until the connection is established.
 </div>
 </td></tr>
 <tr><td><a href="Procord_connection.html#VALconnect">connect</a> [<a href="Procord_connection.html">Procord_connection</a>]</td>
@@ -124,7 +136,18 @@ Return a string explaining an error in English.
 Return a string explaining an error in English.
 </div>
 </td></tr>
+<tr><td align="left"><br>F</td></tr>
+<tr><td><a href="Procord_protocol.html#VALformatter_of_destination">formatter_of_destination</a> [<a href="Procord_protocol.html">Procord_protocol</a>]</td>
+<td><div class="info">
+Return the formatter corresponding to a destination.
+</div>
+</td></tr>
 <tr><td align="left"><br>G</td></tr>
+<tr><td><a href="Procord_worker.html#VALget_dont_fork">get_dont_fork</a> [<a href="Procord_worker.html">Procord_worker</a>]</td>
+<td><div class="info">
+Get the <code class="code">--procord-dont-fork</code> argument.
+</div>
+</td></tr>
 <tr><td><a href="Procord_worker.html#VALget_hostname">get_hostname</a> [<a href="Procord_worker.html">Procord_worker</a>]</td>
 <td><div class="info">
 Get the <code class="code">--procord-hostname</code> argument.
@@ -204,6 +227,11 @@ Make a socket address from an IPv4, IPv6 or DNS address.
 Make a <code class="code">delegated_task</code>.
 </div>
 </td></tr>
+<tr><td><a href="Procord_worker.html#VALmake_redirected_formatter">make_redirected_formatter</a> [<a href="Procord_worker.html">Procord_worker</a>]</td>
+<td><div class="info">
+Create a new formatter which is already redirected.
+</div>
+</td></tr>
 <tr><td><a href="Procord_task.html#VALmake_worker_task">make_worker_task</a> [<a href="Procord_task.html">Procord_task</a>]</td>
 <td><div class="info">
 Make a <code class="code">worker_task</code>.
@@ -234,6 +262,11 @@ Get the output deserialization function of a delegated task.
 <tr><td><a href="Procord_protocol.html#VALreceive">receive</a> [<a href="Procord_protocol.html">Procord_protocol</a>]</td>
 <td><div class="info">
 Try to receive a message from a connection.
+</div>
+</td></tr>
+<tr><td><a href="Procord_connection.Sync.html#VALreceive">receive</a> [<a href="Procord_connection.Sync.html">Procord_connection.Sync</a>]</td>
+<td><div class="info">
+Same as <code class="code">receive</code>, but wait until the data is available.
 </div>
 </td></tr>
 <tr><td><a href="Procord_connection.html#VALreceive">receive</a> [<a href="Procord_connection.html">Procord_connection</a>]</td>
@@ -276,6 +309,22 @@ Same as <code class="code">receive</code>, but do not remove the data from the b
 Same as <code class="code">receive_poll</code>, but may receive less data than requested.
 </div>
 </td></tr>
+<tr><td><a href="Procord_worker.html#VALredirect_formatter">redirect_formatter</a> [<a href="Procord_worker.html">Procord_worker</a>]</td>
+<td><div class="info">
+Redirect a formatter.
+</div>
+</td></tr>
+<tr><td><a href="Procord_worker.html#VALredirect_standard_formatters">redirect_standard_formatters</a> [<a href="Procord_worker.html">Procord_worker</a>]</td>
+<td><div class="info">
+Redirect <code class="code">Format.std_formatter</code> and <code class="code">Format.err_formatter</code> to the main
+      program.
+</div>
+</td></tr>
+<tr><td><a href="Procord_protocol.html#VALregister_destination">register_destination</a> [<a href="Procord_protocol.html">Procord_protocol</a>]</td>
+<td><div class="info">
+Register a formatter as a custom destination.
+</div>
+</td></tr>
 <tr><td><a href="Procord_connection.html#VALremote_address">remote_address</a> [<a href="Procord_connection.html">Procord_connection</a>]</td>
 <td><div class="info">
 Get the remote address of a connection.
@@ -313,6 +362,11 @@ Run a worker which will listen for network connections.
 Send a message.
 </div>
 </td></tr>
+<tr><td><a href="Procord_connection.Sync.html#VALsend">send</a> [<a href="Procord_connection.Sync.html">Procord_connection.Sync</a>]</td>
+<td><div class="info">
+Same as <code class="code">send</code>, but wait until the sending buffer is empty.
+</div>
+</td></tr>
 <tr><td><a href="Procord_connection.html#VALsend">send</a> [<a href="Procord_connection.html">Procord_connection</a>]</td>
 <td><div class="info">
 Send data to a connection.
@@ -328,6 +382,16 @@ Send an error message.
 Send an exception message.
 </div>
 </td></tr>
+<tr><td><a href="Procord_protocol.html#VALsend_flush">send_flush</a> [<a href="Procord_protocol.html">Procord_protocol</a>]</td>
+<td><div class="info">
+Send a flush request.
+</div>
+</td></tr>
+<tr><td><a href="Procord_protocol.html#VALsend_print">send_print</a> [<a href="Procord_protocol.html">Procord_protocol</a>]</td>
+<td><div class="info">
+Send a message to be printed using <code class="code">Format.fprintf</code>.
+</div>
+</td></tr>
 <tr><td><a href="Procord_protocol.html#VALsend_task_name">send_task_name</a> [<a href="Procord_protocol.html">Procord_protocol</a>]</td>
 <td><div class="info">
 Send the name of the task to execute.
@@ -341,6 +405,11 @@ Send an unknown exception message.
 <tr><td><a href="Procord_protocol.html#VALsend_value">send_value</a> [<a href="Procord_protocol.html">Procord_protocol</a>]</td>
 <td><div class="info">
 Send a value (input or output).
+</div>
+</td></tr>
+<tr><td><a href="Procord_worker.html#VALset_dont_fork">set_dont_fork</a> [<a href="Procord_worker.html">Procord_worker</a>]</td>
+<td><div class="info">
+Set the <code class="code">--procord-dont-fork</code> argument.
 </div>
 </td></tr>
 <tr><td><a href="Procord_worker.html#VALset_hostname">set_hostname</a> [<a href="Procord_worker.html">Procord_worker</a>]</td>
@@ -397,6 +466,11 @@ Make a rope from a part of another rope.
 <tr><td><a href="Procord_worker.html#VALtask">task</a> [<a href="Procord_worker.html">Procord_worker</a>]</td>
 <td><div class="info">
 Embed a <code class="code">Procord_task.worker_task</code> for use with <a href="Procord_worker.html#VALrun"><code class="code">Procord_worker.run</code></a>.
+</div>
+</td></tr>
+<tr><td><a href="Procord_connection.html#VALtimeout">timeout</a> [<a href="Procord_connection.html">Procord_connection</a>]</td>
+<td><div class="info">
+Get the <code class="code">timeout</code> argument which was passed to <code class="code">connect</code> or <code class="code">custom</code>.
 </div>
 </td></tr>
 <tr><td><a href="Procord_rope.html#VALto_string">to_string</a> [<a href="Procord_rope.html">Procord_rope</a>]</td>
@@ -481,6 +555,6 @@ Get the input serialization function of a delegated task.
 Get the output serialization function of a worker task.
 </div>
 </td></tr>
-</table><br>
+</table>
 </body>
 </html>

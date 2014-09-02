@@ -17,15 +17,20 @@
 <link title="Procord_task" rel="Chapter" href="Procord_task.html">
 <link title="Procord_worker" rel="Chapter" href="Procord_worker.html"><link title="Generic Workers" rel="Section" href="#2_GenericWorkers">
 <link title="Custom Workers" rel="Section" href="#2_CustomWorkers">
+<link title="Redirecting Standard Outputs" rel="Section" href="#2_RedirectingStandardOutputs">
+<link title="Default Redirections" rel="Subsection" href="#3_DefaultRedirections">
+<link title="Custom Redirections" rel="Subsection" href="#3_CustomRedirections">
 <title>Procord_worker</title>
 </head>
 <body>
-<div class="navbar"><a href="Procord_task.html">Previous</a>
-&nbsp;<a href="index.html">Up</a>
+<div class="navbar"><a class="pre" href="Procord_task.html" title="Procord_task">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
 &nbsp;</div>
-<center><h1>Module <a href="type_Procord_worker.html">Procord_worker</a></h1></center>
-<br>
-<pre><span class="keyword">module</span> Procord_worker: <code class="code">sig</code> <a href="Procord_worker.html">..</a> <code class="code">end</code></pre>Main function to run a Procord worker.<br>
+<h1>Module <a href="type_Procord_worker.html">Procord_worker</a></h1>
+
+<pre><span class="keyword">module</span> Procord_worker: <code class="code">sig</code> <a href="Procord_worker.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Main function to run a Procord worker.<br>
+</div>
 <hr width="100%">
 <br>
 Workers are external programs which can execute some tasks.
@@ -33,18 +38,21 @@ Workers are external programs which can execute some tasks.
 
     The easiest way to build a worker is just to use <code class="code">run</code>. If you prefer
     to handle command-line options yourself, use other <code class="code">run_*</code> functions.<br>
+
 <pre><span id="TYPEtask"><span class="keyword">type</span> <code class="type"></code>task</span> </pre>
-<div class="info">
+<div class="info ">
 Same as <code class="code">Procord_task.worker_task</code>, but allowing heterogenous lists of
     tasks.<br>
 </div>
 
-<pre><span id="VALtask"><span class="keyword">val</span> task</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">Procord_task.worker_task</a> -> <a href="Procord_worker.html#TYPEtask">task</a></code></pre><div class="info">
+
+<pre><span id="VALtask"><span class="keyword">val</span> task</span> : <code class="type">('a, 'b) <a href="Procord_task.html#TYPEworker_task">Procord_task.worker_task</a> -> <a href="Procord_worker.html#TYPEtask">task</a></code></pre><div class="info ">
 Embed a <code class="code">Procord_task.worker_task</code> for use with <a href="Procord_worker.html#VALrun"><code class="code">Procord_worker.run</code></a>.<br>
 </div>
 <br>
-<span id="2_GenericWorkers"><h2>Generic Workers</h2></span><br>
-<pre><span id="VALrun"><span class="keyword">val</span> run</span> : <code class="type">?spec:(Arg.key * Arg.spec * Arg.doc) list -><br>       ?usage:Arg.usage_msg -><br>       ?anon:Arg.anon_fun -> <a href="Procord_worker.html#TYPEtask">task</a> list -> unit</code></pre><div class="info">
+<h2 id="2_GenericWorkers">Generic Workers</h2><br>
+
+<pre><span id="VALrun"><span class="keyword">val</span> run</span> : <code class="type">?spec:(Arg.key * Arg.spec * Arg.doc) list -><br>       ?usage:Arg.usage_msg -><br>       ?anon:Arg.anon_fun -> <a href="Procord_worker.html#TYPEtask">task</a> list -> unit</code></pre><div class="info ">
 Parse command-line options and run the appropriate worker, if any.
 <p>
 
@@ -66,7 +74,11 @@ Parse command-line options and run the appropriate worker, if any.
         tasks that may be executed at the same time;</li>
 <li><code class="code">--procord-reuse-address</code>:
         option for <code class="code">--procord-server</code> which tells the server to set the
-        <code class="code">SO_REUSEADDR</code> option on the listening socket.</li>
+        <code class="code">SO_REUSEADDR</code> option on the listening socket;</li>
+<li><code class="code">--procord-dont-fork</code>:
+        option for <code class="code">--procord-server</code> which removes the call to
+        <code class="code">Unix.fork</code>, imlying that only one task can be executed at the same
+        time and that crashing a task crashes the server as well.</li>
 </ul>
 
       If neither <code class="code">--procord-worker</code> nor <code class="code">--procord-server</code> are given, the
@@ -84,51 +96,73 @@ Parse command-line options and run the appropriate worker, if any.
       If you need more complex command-line parsing, use the
       other <code class="code">run_*</code> functions.<br>
 </div>
-<pre><span id="VALget_input_file"><span class="keyword">val</span> get_input_file</span> : <code class="type">unit -> string</code></pre><div class="info">
+
+<pre><span id="VALget_input_file"><span class="keyword">val</span> get_input_file</span> : <code class="type">unit -> string</code></pre><div class="info ">
 Get the <code class="code">--procord-input-file</code> argument.
       Default value is <code class="code">""</code>.<br>
 </div>
-<pre><span id="VALset_input_file"><span class="keyword">val</span> set_input_file</span> : <code class="type">string -> unit</code></pre><div class="info">
+
+<pre><span id="VALset_input_file"><span class="keyword">val</span> set_input_file</span> : <code class="type">string -> unit</code></pre><div class="info ">
 Set the <code class="code">--procord-input-file</code> argument.<br>
 </div>
-<pre><span id="VALget_output_file"><span class="keyword">val</span> get_output_file</span> : <code class="type">unit -> string</code></pre><div class="info">
+
+<pre><span id="VALget_output_file"><span class="keyword">val</span> get_output_file</span> : <code class="type">unit -> string</code></pre><div class="info ">
 Get the <code class="code">--procord-output-file</code> argument.
       Default value is <code class="code">""</code>.<br>
 </div>
-<pre><span id="VALset_output_file"><span class="keyword">val</span> set_output_file</span> : <code class="type">string -> unit</code></pre><div class="info">
+
+<pre><span id="VALset_output_file"><span class="keyword">val</span> set_output_file</span> : <code class="type">string -> unit</code></pre><div class="info ">
 Set the <code class="code">--procord-output-file</code> argument.<br>
 </div>
-<pre><span id="VALget_hostname"><span class="keyword">val</span> get_hostname</span> : <code class="type">unit -> string</code></pre><div class="info">
+
+<pre><span id="VALget_hostname"><span class="keyword">val</span> get_hostname</span> : <code class="type">unit -> string</code></pre><div class="info ">
 Get the <code class="code">--procord-hostname</code> argument.
       Default value is <code class="code">""</code>.<br>
 </div>
-<pre><span id="VALset_hostname"><span class="keyword">val</span> set_hostname</span> : <code class="type">string -> unit</code></pre><div class="info">
+
+<pre><span id="VALset_hostname"><span class="keyword">val</span> set_hostname</span> : <code class="type">string -> unit</code></pre><div class="info ">
 Set the <code class="code">--procord-hostname</code> argument.<br>
 </div>
-<pre><span id="VALget_port"><span class="keyword">val</span> get_port</span> : <code class="type">unit -> int</code></pre><div class="info">
+
+<pre><span id="VALget_port"><span class="keyword">val</span> get_port</span> : <code class="type">unit -> int</code></pre><div class="info ">
 Get the <code class="code">--procord-port</code> argument.
       Default value is <code class="code">1111</code>.<br>
 </div>
-<pre><span id="VALset_port"><span class="keyword">val</span> set_port</span> : <code class="type">int -> unit</code></pre><div class="info">
+
+<pre><span id="VALset_port"><span class="keyword">val</span> set_port</span> : <code class="type">int -> unit</code></pre><div class="info ">
 Set the <code class="code">--procord-port</code> argument.<br>
 </div>
-<pre><span id="VALget_max_simultaneous_tasks"><span class="keyword">val</span> get_max_simultaneous_tasks</span> : <code class="type">unit -> int option</code></pre><div class="info">
+
+<pre><span id="VALget_max_simultaneous_tasks"><span class="keyword">val</span> get_max_simultaneous_tasks</span> : <code class="type">unit -> int option</code></pre><div class="info ">
 Get the <code class="code">--procord-max-simultaneous-tasks</code> argument.
       Default value is <code class="code">None</code> (infinite).<br>
 </div>
-<pre><span id="VALset_max_simultaneous_tasks"><span class="keyword">val</span> set_max_simultaneous_tasks</span> : <code class="type">int option -> unit</code></pre><div class="info">
+
+<pre><span id="VALset_max_simultaneous_tasks"><span class="keyword">val</span> set_max_simultaneous_tasks</span> : <code class="type">int option -> unit</code></pre><div class="info ">
 Set the <code class="code">--procord-max-simultaneous-tasks</code> argument.<br>
 </div>
-<pre><span id="VALget_reuse_address"><span class="keyword">val</span> get_reuse_address</span> : <code class="type">unit -> bool</code></pre><div class="info">
+
+<pre><span id="VALget_reuse_address"><span class="keyword">val</span> get_reuse_address</span> : <code class="type">unit -> bool</code></pre><div class="info ">
 Get the <code class="code">--procord-reuse-address</code> argument.
       Default value is <code class="code">false</code>.<br>
 </div>
-<pre><span id="VALset_reuse_address"><span class="keyword">val</span> set_reuse_address</span> : <code class="type">bool -> unit</code></pre><div class="info">
+
+<pre><span id="VALset_reuse_address"><span class="keyword">val</span> set_reuse_address</span> : <code class="type">bool -> unit</code></pre><div class="info ">
 Set the <code class="code">--procord-reuse-address</code> argument.<br>
 </div>
+
+<pre><span id="VALget_dont_fork"><span class="keyword">val</span> get_dont_fork</span> : <code class="type">unit -> bool</code></pre><div class="info ">
+Get the <code class="code">--procord-dont-fork</code> argument.
+      Default value is <code class="code">false</code>.<br>
+</div>
+
+<pre><span id="VALset_dont_fork"><span class="keyword">val</span> set_dont_fork</span> : <code class="type">bool -> unit</code></pre><div class="info ">
+Set the <code class="code">--procord-dont-fork</code> argument.<br>
+</div>
 <br>
-<span id="2_CustomWorkers"><h2>Custom Workers</h2></span><br>
-<pre><span id="VALrun_custom"><span class="keyword">val</span> run_custom</span> : <code class="type">?input:Unix.file_descr -><br>       ?output:Unix.file_descr -> <a href="Procord_worker.html#TYPEtask">task</a> list -> unit</code></pre><div class="info">
+<h2 id="2_CustomWorkers">Custom Workers</h2><br>
+
+<pre><span id="VALrun_custom"><span class="keyword">val</span> run_custom</span> : <code class="type">?input:Unix.file_descr -><br>       ?output:Unix.file_descr -> <a href="Procord_worker.html#TYPEtask">task</a> list -> unit</code></pre><div class="info ">
 Run a worker which will accomplish one task amongst several on given
       file descriptors.<br>
 </div>
@@ -137,7 +171,8 @@ Run a worker which will accomplish one task amongst several on given
 <p>
 
       The last parameter is the list of tasks that the worker can handle.</div>
-<pre><span id="VALrun_listen"><span class="keyword">val</span> run_listen</span> : <code class="type">?continue:(unit -> bool) -><br>       ?accept:(Unix.sockaddr -> bool) -><br>       ?max_simultaneous_tasks:int -><br>       ?reuse_address:bool -><br>       hostname:string -> port:int -> <a href="Procord_worker.html#TYPEtask">task</a> list -> unit</code></pre><div class="info">
+
+<pre><span id="VALrun_listen"><span class="keyword">val</span> run_listen</span> : <code class="type">?continue:(unit -> bool) -><br>       ?accept:(Unix.sockaddr -> bool) -><br>       ?max_simultaneous_tasks:int -><br>       ?reuse_address:bool -><br>       ?dont_fork:bool -><br>       hostname:string -> port:int -> <a href="Procord_worker.html#TYPEtask">task</a> list -> unit</code></pre><div class="info ">
 Run a worker which will listen for network connections.<br>
 </div>
 <div class="param_info"><code class="code">continue</code> : Function called before each call to
@@ -153,6 +188,7 @@ Run a worker which will listen for network connections.<br>
 <div class="param_info"><code class="code">reuse_address</code> : If <code class="code">true</code>, set <code class="code">SO_REUSEADDR</code>, preventing the
         "Address already in use" error. This is useful for debugging but
         could potentially be abused by malware.</div>
+<div class="param_info"><code class="code">dont_fork</code> : If <code class="code">true</code>, do not fork to run the tasks.</div>
 <div class="param_info"><code class="code">hostname</code> : Specifies the interface to listen to. Examples:<ul>
 <li><code class="code">"localhost"</code>: only accept local IPv4 connections;</li>
 <li><code class="code">"::1"</code>: only accept local IPv6 connections;</li>
@@ -164,4 +200,67 @@ Run a worker which will listen for network connections.<br>
 <p>
 
       Raise <code class="code">Unix_error</code> if the server cannot be established.</div>
+<br>
+<h2 id="2_RedirectingStandardOutputs">Redirecting Standard Outputs</h2><br>
+<br>
+Workers should not print on their own <code class="code">stdout</code> as, in local mode,
+    workers communicate with the main program using <code class="code">stdout</code>. In remote
+    mode, workers communicate with the main program using sockets, and
+    writing on <code class="code">stdout</code> is not an issue. However, this will print on the
+    standard output of the worker, not of the main program.
+<p>
+
+    Using the functions below allows you to continue using the
+    <code class="code">Format</code> module normally. Everything you write will actually be
+    printed by the main program. This allows you to write your tasks
+    as if they were running in the main program process.
+    The functions below have no effect on the input/output functions
+    of <code class="code">Pervasives</code>, <code class="code">Unix</code>, <code class="code">Printf</code> and <code class="code">Scanf</code>.<br>
+<br>
+<h3 id="3_DefaultRedirections">Default Redirections</h3><br>
+
+<pre><span id="VALredirect_standard_formatters"><span class="keyword">val</span> redirect_standard_formatters</span> : <code class="type">unit -> unit</code></pre><div class="info ">
+Redirect <code class="code">Format.std_formatter</code> and <code class="code">Format.err_formatter</code> to the main
+      program.
+<p>
+
+      Everything you write to <code class="code">Format.std_formatter</code> (for example using
+      <code class="code">Format.printf</code>) will be sent to the main program, which will print
+      it on its own <code class="code">stdout</code>.
+<p>
+
+      Similarly, everything you write to <code class="code">Format.err_formatter</code> (for
+      example using <code class="code">Format.eprintf</code>) will be sent to the main program,
+      which will print it on its own <code class="code">stderr</code>.
+<p>
+
+      This function is automatically called by <a href="Procord_worker.html#VALrun"><code class="code">Procord_worker.run</code></a>, but not by
+      other <code class="code">run_*</code> functions.
+<p>
+
+      You may call this function from the main program, typically
+      before calling a <code class="code">run_*</code> function, or from a task. The
+      redirection will continue if the main program becomes a
+      worker.<br>
+</div>
+<br>
+<h3 id="3_CustomRedirections">Custom Redirections</h3><br>
+
+<pre><span id="VALredirect_formatter"><span class="keyword">val</span> redirect_formatter</span> : <code class="type">Format.formatter -> <a href="Procord_protocol.html#TYPEprint_destination">Procord_protocol.print_destination</a> -> unit</code></pre><div class="info ">
+Redirect a formatter.
+<p>
+
+      Everything you write to the formatter given in argument will be
+      redirected to the specified destination of the main program.
+<p>
+
+      You may call this function from the main program, typically
+      before calling a <code class="code">run_*</code> function, or from a task. The
+      redirection will continue if the main program becomes a
+      worker.<br>
+</div>
+
+<pre><span id="VALmake_redirected_formatter"><span class="keyword">val</span> make_redirected_formatter</span> : <code class="type"><a href="Procord_protocol.html#TYPEprint_destination">Procord_protocol.print_destination</a> -> Format.formatter</code></pre><div class="info ">
+Create a new formatter which is already redirected.<br>
+</div>
 </body></html>
